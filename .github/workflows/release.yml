@@ -1,0 +1,42 @@
+name: Create PDF Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.14.0
+
+      - name: Compile PDF with devbox
+        run: devbox run compile
+
+      - name: Get current date and time
+        id: datetime
+        run: |
+          DATETIME=$(date +'%Y-%m-%d_%H-%M')
+          echo "datetime=${DATETIME}" >> $GITHUB_OUTPUT
+          echo "filename=101.292-IP-ICT-ms2-report-${DATETIME}.pdf" >> $GITHUB_OUTPUT
+
+      - name: Rename PDF
+        run: |
+          cp report/index.pdf ${{ steps.datetime.outputs.filename }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.datetime.outputs.datetime }}
+          name: ${{ steps.datetime.outputs.datetime }}
+          files: ${{ steps.datetime.outputs.filename }}
+          generate_release_notes: true
