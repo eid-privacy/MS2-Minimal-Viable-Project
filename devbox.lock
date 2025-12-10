@@ -69,6 +69,102 @@
           "store_path": "/nix/store/bmakyv5ip1wc9jk155glzdw4vnnrym04-nodejs-22.14.0"
         }
       }
+    },
+    "tinymist@latest": {
+      "last_modified": "2025-11-26T14:39:26Z",
+      "resolved": "github:NixOS/nixpkgs/5c46f3bd98147c8d82366df95bbef2cab3a967ea#tinymist",
+      "source": "devbox-search",
+      "version": "0.14.4",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/kn1nk3cbmxbjywsjxwsaf39shnv5gh3m-tinymist-0.14.4",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/kn1nk3cbmxbjywsjxwsaf39shnv5gh3m-tinymist-0.14.4"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/aghyjg0wdj38zhs6gaa7fg77wkwp353k-tinymist-0.14.4",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/aghyjg0wdj38zhs6gaa7fg77wkwp353k-tinymist-0.14.4"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/8v2cb9dgcv65wigfmnaykci0fjwf7a0b-tinymist-0.14.4",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/8v2cb9dgcv65wigfmnaykci0fjwf7a0b-tinymist-0.14.4"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pmgl6yvc93w1d5rjvmq5kmmj71cc43qm-tinymist-0.14.4",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/pmgl6yvc93w1d5rjvmq5kmmj71cc43qm-tinymist-0.14.4"
+        }
+      }
+    },
+    "typst@latest": {
+      "last_modified": "2025-12-04T04:58:45Z",
+      "resolved": "github:NixOS/nixpkgs/821f1a2ebab0f13d6d65170d6bd7d2b3a182efdb#typst",
+      "source": "devbox-search",
+      "version": "0.14.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/vbljxwgnjvmgm7l7ndhs7jqjqnbzb12g-typst-0.14.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/vbljxwgnjvmgm7l7ndhs7jqjqnbzb12g-typst-0.14.1"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/kj3pf7rpfhrhlkbkaah2gxcjr115zjs6-typst-0.14.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/kj3pf7rpfhrhlkbkaah2gxcjr115zjs6-typst-0.14.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/kr07ywm19r1lmwhlxlraykk9pxfy8d0n-typst-0.14.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/kr07ywm19r1lmwhlxlraykk9pxfy8d0n-typst-0.14.1"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/rkzs5jgwz30mgw5dcr57wav18nf7xakh-typst-0.14.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/rkzs5jgwz30mgw5dcr57wav18nf7xakh-typst-0.14.1"
+        }
+      }
     }
   }
 }
