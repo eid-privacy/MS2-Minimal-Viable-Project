@@ -1,5 +1,51 @@
+#import "@preview/unequivocal-ams:0.1.2": ams-article, theorem, proof
+
+#show: ams-article.with(
+  title: [Innosuisse Report G0.2],
+  paper-size: "a4",
+  authors: (
+    (
+      name: "Linus Gasser",
+      organization: [EPFL],
+      email: "linus.gasser@epfl.ch",
+      url: "ineiti.ch"
+    ),
+    (
+      name: "Clement Humbert",
+      organization: [SICPA],
+      email: "clement.humbert@sicpa.com",
+    ),
+    (
+      name: "Ahmed Elghareeb",
+      organization: [EPFL],
+      email: "ahmed.elghareeb@epfl.ch",
+    ),
+  ),
+  abstract: lorem(100),
+  bibliography: bibliography("references.bib"),
+)
+// #set page(margin: (inside: 2cm, outside: 1.5cm, y: 1.75cm))
+
 #import "@preview/dashy-todo:0.1.3": todo
 #set heading(numbering: "1.")
+
+#let Pub_holder = $"Pub"_"holder"$
+#let Pub_issuer = $"Pub"_"issuer"$
+#let challenge = $"Challenge"$
+#let credential = $"Credential"$
+#let revocation_list = $"Revocation List"$
+#let timestamp_now = $"Current Date"$
+#let Sig_cred = $"Sig"_"cred"$
+#let Sig_ch = $"Sig"_"ch"$
+#let Sig_list = $"Sig"_"list"$
+#let Pr_holder = $"proof"_"holder"$
+#let Pr_sig_ch = $"proof"_#Sig_ch$
+#let Pr_Pub_holder = $"proof"_#Pub_holder$
+#let Pr_sig_cred = $"proof"_#Sig_cred$
+#let Pr_predicate = $"proof"_"predicate"$
+#let Pr_non-rev = $"proof"_"non-rev"$
+#let Sig_valid(pub, sig, msg) = $"signature_valid"( #pub, #sig, #msg )$
+
 
 = Introduction
 
@@ -7,10 +53,13 @@ This report is the G0.2 for the milestone 2 of the Innosuisse grant 101.292 IP-I
 It recaps the results we gained from building a Proof-of-Concept for an anonymous,
 unlinkable credential which has the following capabilities:
 
-- device/holder binding - proving that the credential is stored on a specific smartphone
-- issuer signature - proving that the credential has been signed by the issuer
-- predicates - proving specific attributes for equality, comparison, or revelation
-- non-revocation - proving that the credential is still valid
+/ device/holder binding: proving that the credential is stored on a specific smartphone,
+  see @proof_device_binding
+/ issuer signature: proving that the credential has been signed by the issuer,
+  see @proof_issuer_signature
+/ predicates: proving specific attributes for equality, comparison, or revelation,
+  see @proof_predicate
+/ non-revocation: proving that the credential is still valid, see @proof_non_revocation
 
 The report starts with a summary and recap of the terms used, problems encountered, and
 solutions tried.
@@ -31,18 +80,18 @@ the most sense to implement.
     columns: 4,
     table.header([Work Package], [Solution], [Time / Size], [Comments]),
     table.cell(rowspan:3)[WP3 - Device Binding], [ZKAttest], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.5s / 5kB], [https://github.com/eid-privacy/WP3-Holder-Binding],
+    [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP3-Holder-Binding],
     [Longfellow], [1s / 300kB], [@FS24],
 
     table.cell(rowspan:3)[WP4 - Issuer Signature], [BBS], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.5s / 5kB], [https://github.com/eid-privacy/WP4-Unlinkable-Anonymous-Credentials],
+    [Noir], [0.7s / 16kB], [https://github.com/eid-privacy/WP4-Unlinkable-Anonymous-Credentials],
     [Longfellow], [1s / 300kB], [@FS24],
 
     table.cell(rowspan:3)[WP5 - Predicates], [BBS], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.5s / 5kB], [https://github.com/eid-privacy/WP5-Predicate-Proofs],
+    [Noir], [0.2s / 16kB], [https://github.com/eid-privacy/WP5-Predicate-Proofs],
     [Longfellow], [1s / 300kB], [@FS24],
 
-    [WP6 - Non-Revocation], [Noir], [5s / 10kB], [https://github.com/eid-privacy/WP6-Revocation],
+    [WP6 - Non-Revocation], [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP6-Revocation],
   ),
   caption: [Summary of our proof-of-concepts]
 ) <table_summary>
@@ -109,6 +158,7 @@ with the Barretenberg backend using hyper-plonk.
     [ZKAttest], [OK], [OK], [OK], [Limited],
     [Noir], [OK], [OK..Bad], [Some], [OK],
     [Longfellow], [OK], [OK], [Some], [No],
+    [Bulletproof], [#todo[Find bulletproof characteristics]], [], [], [],
     [BBS], [OK], [OK], [OK], [Some]
   ),
   caption: [Short comparison of algorithms used in this report]
@@ -121,32 +171,50 @@ and are signed by the issuers.
 In EU and CH, but also some places in the USA, the following credential types are
 used:
 
-\ mDoc / mDL: mobile driving license credential based on ISO/IEC 18013-5:2021
-\ SD-JWT: generic credential with selective disclosure capabilities
+/ mDoc / mDL: mobile driving license credential based on ISO/IEC 18013-5:2021
+/ SD-JWT: generic credential with selective disclosure capabilities
 
 For our tests, we also used the following two credentials:
 
-\ BBS: a special signature type which allows to create simple proofs about the
-attributes of a credential
-\ Flat: the simplest credential where every attribute is represented with a
-fixed size in all credentials
+/ BBS: a special signature type which allows to create simple proofs about the
+  attributes of a credential
+/ Flat: the simplest credential where every attribute is represented with a
+  fixed size in all credentials
+
+=== Flat Credentials
+
+In this MS2, we considered a *Flat* credential with fixed-size fields.
+This is not how current SD-JWT and mDoc are used, but gave us an easy way
+to test if our algorithms work.
+Here is the information stored in the credentials:
+
+- *First Name* - up to 32 characters
+- *Last Name* - up to 32 characters
+- *Date of Birth* - stored as a unix timestamp in seconds, 10 characters
+- *#Pub_holder* - the x and y co-ordinates in hex format, 2 \* 32 characters
+- *Credential ID* - a unique ID of the credential for revocation, 16
+  characters
+
+This gives a total of 218 bytes for the credential.
+We also worked with SD-JWT credentials and are able to use them in noir,
+but for the proof-of-concept, we stayed with the *Flat* credential.
+It is also important to note that these credentials never leave the
+phone of the holder, as the credential is always used for the *private input*
+of the noir circuit (see @Noir_101).
+So only the information chosen by the holder is being sent to the
+verifier, plus the proof that the circuit is correct.
+
+
+=== Privacy in Swiyu
+
+#todo[Explain selective disclosure and batch issuance]
 
 == Recap of Needed Elements
 
-Throughout this report we'll reference the following proofs, which need
-to be valid, but which are not all proven at the same time until
-work package 7.
-
-#let Pub_holder = $"Pub"_"holder"$
-#let Pub_issuer = $"Pub"_"issuer"$
-#let challenge = $"Challenge"$
-#let credential = $"Credential"$
-#let Pr_holder = $"Pr"_"holder"$
-#let Pr_sig_ch = $"Pr"_"sig"_"chal"$
-#let Pr_Pub_holder = $"Pr"_"Pub"_"holder"$
-#let Pr_sig_cred = $"Pr"_"sig"_"cred"$
-#let Pr_predicate = $"Pr"_"predicate"$
-#let Pr_non-rev = $"Pr"_"non-rev"$
+Throughout this report we'll reference the following elements between the
+issuer, the holder, and the verifier.
+For every WP, the corresponding proofs need to be valid, but so far we did not
+create a proof over all WPs.
 
 / #credential: the data stored on the mobile device of the holder containing
   various attributes and signed by the issuer
@@ -155,8 +223,10 @@ work package 7.
 / #Pub_issuer: the public key of the issuer, supposed to be known by all parties
 / #challenge: a random string sent by the verifier to avoid replay attacks.
   Is known to both the verifier and the holder.
+/ #Sig_cred: the signature of the credential, verifiable with the #Pub_issuer
+/ #Sig_ch: the signature of the challenge, verifiable with the #Pub_holder
 / #Pr_holder: ZKP that the #credential is still on the same device, composed of
-  #Pr_sig_ch and #Pr_Pub_holder (@proof_device_binding)
+  the following proofs: (@proof_device_binding)
   / #Pr_sig_ch: ZKP of a signature on the #challenge, verifiable by #Pub_holder
   / #Pr_Pub_holder: ZKP that #Pub_holder is in the #credential
 / #Pr_sig_cred: ZKP that the #credential has been signed by #Pub_issuer,
@@ -164,7 +234,64 @@ work package 7.
 / #Pr_predicate:ZKP that the predicate is true for #credential (@proof_predicate)
 / #Pr_non-rev: ZKP that #credential has not been revoked and is still valid
   (@proof_non_revocation)
+/ #Sig_valid("public key", "signature", "message"): whether the $"public key"$
+  can verify the $"signature"$ over the $"message"$
 
+
+== Frameworks used for our Proof-of-Concepts
+
+While developing our Proof-of-Concepts we were looking for a framework / library which
+can be used for the implementation of a privacy-preserving presentation of e-ID
+attributes.
+From all the libraries presented in WP2, we tried out two and participate actively
+in their development:
+
+/ Docknetwork@docknetwork: is the most complete library available for our purposes
+  and has been developed regularly up to early 2025.
+  Unfortunately, development on this library has been stopped to a halt, and our last
+  change requests took very long to be included.
+  It is written in the Rust language, which is considered as one of the most appropriate
+  programming language for cryptographic libraries, as it allows the programmers to
+  express constraints on the data which help to catch errors very early in development.
+/ Noir@noir_lang: has been developed for the blockchain world, with the goal to be
+  *The Programming Language for Private Apps*.
+  It suits our use-case, as it allows to write a program on a very abstract level,
+  which is then used to create a ZKP circuit and a proof.
+  While its development is fast, and allows outside contributions like ours, it is
+  geared towards blockchains.
+  Noir is currently optimized for fast verification time, which makes sense in a blockchain,
+  but for our purposes we're investigating to rewrite a prover and optimize for
+  fast prover time.
+
+=== Noir <Noir_101>
+
+With Noir it is relatively easy to create your own ZKP on complex statements,
+and use it in your own products.
+Like with all cryptography, it is important to know the caveats and how to optimize
+the program.
+For our proof-of-concepts, we concentrated on the right things to prove,
+and will concentrate on the speed in the second half of the grant.
+When defining a ZKP with Noir, the following parts are important:
+
+/ Secret Inputs: are only known to the *prover*, and need to be linked to a
+  publicly known root.
+  Most often this is done with a signature which can be verified using a
+  trusted public key.
+  Examples are the credential, a signature of the secure element, the revocation
+  list used.
+/ Public Inputs: are known by the *prover* and the *verifier*, but are needed
+  in the calculation of the proof.
+  Examples are known public keys, challenges sent by the *verifier*, the date and time.
+  It is important to chose the public inputs in a way that multiple ZKPs cannot
+  be used to link the holder!
+/ Derived: are values derived from the secret and/or public inputs.
+  We must be sure that all derived values are based on other values which are
+  linked to a publicly known root.
+/ Outputs: can be created by Noir, but internally an output is the same as a public
+  input, where the internal calculation proves that they are the same.
+/ Proof: in our PoC consist of `assert` statements which enforce comparisons
+  or boolean values.
+  Examples are valid signature verification, hash equalities, value comparisons.
 
 = G3.2 - Proof of Device (Holder) Binding <proof_device_binding>
 
@@ -183,7 +310,37 @@ But the following two problems exist with this solution:
 2. To verify the signature, the verifier must know the public key.
   But this information is unique, and can be used to track the holder.
 
-== Using ZKAttest / SHIELDS
+== Proof of Concept 1: Noir
+
+For our Noir circuit to create a proof of holder binding, we have the following
+arguments:
+
+#table(
+  columns: 2,
+  table.header([Argument], [Elements]),
+  [Secret], [
+    - #credential of the holder
+    - #Sig_ch over the verifier challenge
+  ],
+  [Public], [
+    - $"Sha256"(#challenge)$ for easier signature verification
+  ],
+  [Derived], [
+    - #Pub_holder from #credential
+  ],
+  [Proof],[
+    - #Sig_valid([#Pub_holder], [#Sig_ch], [#challenge])
+  ]
+)
+
+This means that the verifier only learns that the holder knows a signature over
+the #challenge, which can be verified by the #Pub_holder.
+But as the only public input is the #challenge, the verifier doesn't learn
+anything which allows it to link two proofs with each other.
+
+You can find the performance of this circuit in the summary of this section.
+
+== Proof of Concept 2: Docknetwork and BBS, ZKAttest
 
 SHIELDS has been developed by Ubique @SHIELDS and is based on the
 ZKAttest @zkattest work by Cloudflare.
@@ -201,10 +358,6 @@ it ever will be.
 Some comments write that BBS is not proven, which is wrong, while NIST
 doesn't want to standardize non-PQS algorithms #todo[Add references].
 
-== Using Noir
-
-
-
 == Longfellow
 
 Time and size
@@ -216,20 +369,90 @@ Time and size
     columns: 5,
     align:(left),
     table.header([Algorithm], [time], [size], [Pro], [Con]),
-    [ZKAttest], [1s], [300kB],
+    [Noir], [0.8s], [16kB],
+      [],
+      [],
+    [BBS, ZKAttest], [1.2s], [16kB],
       [Simple proof, understandable and verifiable with reasonable level of expertise],
-      [Uses BBS, a non-standardized credential format which is not PQS]
+      [Uses BBS, a non-standardized credential format which is not PQS],
+    [Longfellow], [], [],
+      [],
+      []
   ),
   caption: [Summary of G3.2]
 )
 
 = G4.2 - Proof of Credential Signing <proof_issuer_signature>
 
-== Using BBS
+In our observed e-ID systems, the #credential of the holder is always signed by
+the issuer to mark it as valid.
+Because this #Sig_cred is unique to each #credential, it must be avoided to
+send the signature as-is to the verifier.
+Swiyu solves this problem with *Batch Issuance*, where each holder gets a certain
+number of one-use #credential, so that consecutive presentation of the #credential
+doesn't leave a trail of the use of the #credential.
 
-== Using Noir
+To reduce the load of the server, and make the holders more independent of the
+issuer, we propose to have a unique #credential for the holder, which must never
+be sent as-is to the verifier.
+For this proof we also created two proof of concepts: one using Noir, and one
+using BBS.
+
+== Proof of Concept 1: Noir
+
+For our Noir circuit to create a proof of credential signing, we have the following
+arguments:
+
+#table(
+  columns: 2,
+  table.header([Argument], [Elements]),
+  [Secret], [
+    - #credential of the holder
+    - #Sig_cred over the #credential
+  ],
+  [Public], [
+    - #Pub_issuer of the issuer
+  ],
+  [Derived], [
+    - $"cred_hash" = "Sha256"( #credential )$ to verify the signature
+  ],
+  [Proof],[
+    - #Sig_valid([#Pub_issuer], [#Sig_cred], "cred_hash")
+  ]
+)
+
+This means that the verifier only learns that the holder has a #credential
+which is signed by the issuer, as it's verifiable using the #Pub_issuer,
+and nothing else.
+In the second half of the project, this verification will have to be
+performed for every proof, to assure the verifier that the holder is
+using a valid #credential.
+
+You can find the performance of this circuit in the summary of this section.
+
+== Proof of Concept 2: Docknetwork and BBS
 
 == Longfellow
+
+== Summary
+
+#figure(
+  table(
+    columns: 5,
+    align:(left),
+    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    [Noir], [0.7s], [16kB],
+      [],
+      [],
+    [BBS], [], [],
+      [],
+      [],
+    [Longfellow], [], [],
+      [],
+      []
+  ),
+  caption: [Summary of G4.2]
+)
 
 = G5.2 - Proof of Predicates <proof_predicate>
 
@@ -239,11 +462,61 @@ Time and size
 - less / bigger
 - selective disclosure
 
-== Using BBS
+== Proof of Concept 1: Noir
 
-== Using Noir
+For our Noir circuit to create a proof of credential signing, we have the following
+arguments:
+
+#table(
+  columns: 2,
+  table.header([Argument], [Elements]),
+  [Secret], [
+    - #credential of the holder
+  ],
+  [Public], [
+    - $"current_date"$ given in seconds since the Unix Epoch
+  ],
+  [Derived], [
+    - $"date_of_birth"$ from the #credential
+  ],
+  [Proof],[
+    - $"date_of_birth" + 18 "years" <= "current_date"$
+  ]
+)
+
+Here the verifier only learns that the circuit used the $"current_date"$ to
+do its calculations, but nothing specific about the birthday or the
+full age.
+It is to be noted that more complex age verifications pose no problem at all:
+verifying that the holder is 18 years or older, but not older than 25, is easily
+realizable.
+To convince the verifier that the credential is valid, and that it belongs to
+the holder, this should be combined with @proof_device_binding and
+@proof_issuer_signature.
+
+== Proof of Concept 2: Docknetwork and Bulletproofs
 
 == Longfellow
+
+== Summary
+
+#figure(
+  table(
+    columns: 5,
+    align:(left),
+    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    [Noir], [0.2s], [16kB],
+      [],
+      [],
+    [Bulletproofs], [], [],
+      [],
+      [],
+    [Longfellow], [], [],
+      [],
+      []
+  ),
+  caption: [Summary of G3.2]
+)
 
 = G6.2 - Proof of Non-Revocation <proof_non_revocation>
 
@@ -252,9 +525,60 @@ Time and size
 - accumulators
 - revocation lists
 
-== Using Noir
+== Proof of Concept 1: Noir
 
+For our Noir circuit to create a proof of credential signing, we have the following
+arguments:
 
+#table(
+  columns: 2,
+  table.header([Argument], [Elements]),
+  [Secret], [
+    - #credential of the holder
+    - #revocation_list corresponding to the #credential
+  ],
+  [Public], [
+    - #Pub_issuer of the issuer
+    - #timestamp_now in seconds since Unix epoch
+  ],
+  [Derived], [
+    - $"cred_id"$, the unique ID of the #credential
+    - From the #revocation_list, the following information is extracted:
+      - $"start_list"$, the first ID on this list
+      - $"revocation_flags"$, the bitfield with a "1" indicating revocation
+      - $"signature_time"$ by the issuer to certify correctness of the list
+      - #Sig_list
+      - $"sig_hash" = "Sha256"(#revocation_list)$
+  ],
+  [Proof],[
+    - $"cred_id"$ is in the range of $"start_list".."start_list" + "LIST_SIZE"$
+    - the corresponding bit-entry of $"cred_id"$ in the $"revocation_flags"$ is 0 (non-revoked)
+    - $"signature_time" + 7 "days" >= #timestamp_now$
+    - #Sig_valid([#Pub_issuer], [#Sig_list], "sig_hash")
+  ]
+)
+
+== Proof of Concept 2: Docknetwork and Cryptographic Accumulators
+
+== Summary
+
+#figure(
+  table(
+    columns: 5,
+    align:(left),
+    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    [Noir], [0.6s], [16kB],
+      [],
+      [],
+    [Accumulators], [], [],
+      [],
+      [],
+    [Longfellow], [], [],
+      [],
+      []
+  ),
+  caption: [Summary of G3.2]
+)
 
 = Byproducts
 
@@ -268,6 +592,3 @@ Time and size
 Networking with FOITT, Ubique, ETHZ, UniBe, Human Colossus
 
 == Hands-on Workshop
-
-
-#bibliography("references.bib")
