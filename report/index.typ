@@ -592,3 +592,10 @@ arguments:
 Networking with FOITT, Ubique, ETHZ, UniBe, Human Colossus
 
 == Hands-on Workshop
+
+= Future Work
+
+- implement noir prover/verifier on SICPA DTS
+- compare with Longfellow on SICPA DTS
+- optimize prover time for verification time
+- put it all together
