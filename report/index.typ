@@ -471,11 +471,48 @@ You can find the performance of this circuit in the summary of this section.
 
 = G5.2 - Proof of Predicates <proof_predicate>
 
-== Types of Predicates
+Proving the possession of a credential is not interesting for a verifier.
+Before it can offer a service to the holder, one or more of the attributes
+must be revealed to the verifier.
+Instead of revealing the full attribute, the holder can also disclose only
+a predicate to the verifier, and thus keep some anonymity.
+In our proof-of-concept, we consider the following revelations by the holder:
 
-- equality
-- less / bigger
-- selective disclosure
+/ Selective Disclosure: allows the holder to fully reveal one or more of
+  their attributes stored in the credential.
+  This can be their full name, the address, or any other of the attributes
+  present in the credential.
+/ Set Membership: for an attribute can be used to prove that the credential
+  is part of a set, e.g., prove that the citizenship is part of the EU,
+  without revealing which country.
+  It can also be used to show that the credential has not been revoked,
+  by proving a missing membership of the credential in the list of
+  revoked credentials.
+/ Comparison: with numerical attributes.
+  The most cited comparison is the age verification: the holder creates
+  a proof that their date of birth is 18 years or more in the past.
+  With additional credentials other comparisons, like salary ranges,
+  are also possible.
+
+In the upcoming Swiyu project, *selective disclosure* is done using SD-JWTs,
+where the attribute is stored as $"sha256"( "salt" | "attribute_value" )$
+in the credential.
+To disclose the $"attribute_value"$, the holder sends it together with
+the $"salt"$ to the verifier, which can calculate the hash.
+
+*Set membership* and *comparisons* are only available for pre-defined
+attribute relationships: the credential holds a list of pre-computed
+comparisons, like `age <= 25`, `age <= 35`, and so on.
+The holder can then reveal one or more of these entries to the verifier.
+
+One of the big disadvantages of using `sha256` for selective disclosure in
+this way is the linkability of the presentations:
+every time a holder presents their credential, the verifier can look
+at the hashes, and create a unique fingerprint of the holder, and then
+compare this with other presentations from other verifiers.
+The current Swiyu project uses *Batch Issuance* to avoid this linkability:
+instead of a single credential, the holder gets a batch (usually 10) of
+one-use credentials, which are deleted once they have been used.
 
 == Proof of Concept 1: Noir
 
