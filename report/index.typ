@@ -572,15 +572,43 @@ the holder, this should be combined with @proof_device_binding and
 
 = G6.2 - Proof of Non-Revocation <proof_non_revocation>
 
-== Revocation Lists
+One of the last elements in presenting a credential is the proof of
+validity, or proof of non-revocation: the verifier must be convinced
+that the credential is still valid.
+This test includes two steps: first it must be proven that the validity
+field is in the future, then it must be proven that the credential ID
+is not in the revocation list.
+For the validity field, we already saw the comparison in @proof_predicate,
+so we'll concentrate here for the prove that the credential ID is not
+in the revocation list.
 
-- accumulators
-- revocation lists
+There are two ways to prove that the ID of a credential is still valid:
+
+/ Accumulators@docknetwork_accumulator:
+  are a cryptographic structure which allows to compress
+  IDs into a fixed length field, and then have a proof for each ID to
+  be absent or present in this field.
+  For the proof of non-revocation, this would be the proof that the ID
+  of the credential is not included in the field.
+  The disadvantage of this solution is that each time the accumulator is
+  updated, all holders must update their proof of non-inclusion.
+/ Revocation List@Swiyu_status_list:
+  in its simplest form is an array where every ID of a credential is an
+  index and points to $0$ for *non-revoked* or $1$ for *revoked*.
+  The Swiyu project proposes the IETF format@token_status_list, and splits
+  the list in small packets.
+  The size of these packets must be chosen big enough to avoid
+  identification when the lists are requested, but also small enough
+  that the download does not require too much resources.
 
 == Proof of Concept 1: Noir
 
-For our Noir circuit to create a proof of credential signing, we have the following
-arguments:
+In our PoC we used the *revocation list* approach.
+But instead of sending the ID from the holder to the verifier, we let
+the holder download the revocation list, and then create
+a ZKP that the ID of the credential is not in the list.
+For this to be feasible, the list must not be too large, else the
+time to create the proof can be many seconds.
 
 #table(
   columns: 2,
