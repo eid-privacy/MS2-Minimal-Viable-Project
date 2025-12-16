@@ -360,7 +360,22 @@ doesn't want to standardize non-PQS algorithms #todo[Add references].
 
 == Longfellow
 
-Time and size
+Longfellow is the name given to the implementation of "Anonymous Credentials from ECDSA" @FS24.
+Both the code and publication are work by Google.
+The open-source code provided demonstrates the presentation of an mDL credential, complete with
+holder binding and proof of non-revocation.
+
+The circuits are well-optimized but also hard to read/understand/audit.
+As a result they are hard to adapt to other scenarios such as presenting an SD-JWT.
+
+The prover time for an mDoc presentation, as benchmarked in the paper, sits at 1.2s for a size less than
+1MB (although no details are provided on this) and the verifier time is recorded as 0.7s.
+
+There is no benchmark specific to the holder binding proof.
+Verifying an ECDSA signature is benchmarked at 80ms on a Pixel Pro 6 phone
+and holder binding can be reasonably expected within this order of magnitude.
+The author's toy credential (same concept as our "flat" credential) presentation size is around 300kb,
+which we can see as an upperbound on the proof length for holder binding.
 
 == Summary
 
@@ -375,9 +390,9 @@ Time and size
     [BBS, ZKAttest], [1.2s], [16kB],
       [Simple proof, understandable and verifiable with reasonable level of expertise],
       [Uses BBS, a non-standardized credential format which is not PQS],
-    [Longfellow], [], [],
-      [],
-      []
+    [Longfellow], [\~80ms], [\<300kb],
+      [Fast, PQS],
+      [Circuit auditing and writing is difficult]
   ),
   caption: [Summary of G3.2]
 )
