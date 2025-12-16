@@ -390,7 +390,7 @@ which we can see as an upperbound on the proof length for holder binding.
     [BBS, ZKAttest], [1.2s], [16kB],
       [Simple proof, understandable and verifiable with reasonable level of expertise],
       [Uses BBS, a non-standardized credential format which is not PQS],
-    [Longfellow], [\~80ms], [\<300kb],
+    [Longfellow], [\~0.08s], [\<300kb],
       [Fast, PQS],
       [Circuit auditing and writing is difficult]
   ),
@@ -447,7 +447,17 @@ You can find the performance of this circuit in the summary of this section.
 
 == Proof of Concept 2: Docknetwork and BBS
 
-== Longfellow
+== Longfellow <proof_issuer_signature_longfellow>
+
+The longfellow paper @FS24 benchmark the presentation of a credential
+comparable to our flat credential in section 6.1.
+The reported prover time is 470ms on a Pixel Pro 6 for a proof size of 291kb.
+This includes:
+  * parsing the credential and extracting: holder key, age attribute, valid_from, and valid_until timestamps
+  * proving the credential is well signed for a given issuer key
+  * the proof that the credential holder is older than 18
+  * proof that the credential is still valid (using the parsed timestamps)
+This benchmark provide an upper-bound that we can compare to other solutions.
 
 == Summary
 
@@ -462,7 +472,7 @@ You can find the performance of this circuit in the summary of this section.
     [BBS], [], [],
       [],
       [],
-    [Longfellow], [], [],
+    [Longfellow], [0.470s], [291kb],
       [],
       []
   ),
@@ -550,6 +560,14 @@ the holder, this should be combined with @proof_device_binding and
 
 == Longfellow
 
+We use the numbers from @FS24 section 6.1 again.
+For a breakdown of what the proof performs see @proof_issuer_signature_longfellow.
+As a reminder, the prover time is 570ms and the proof size 291kb long.
+
+To get a more precise idea of the time require we can deduct 80ms per signature verification to get
+410ms of prover time but it is difficult to account for the rest of the checks that we don't perform
+in other variants.
+
 == Summary
 
 #figure(
@@ -563,7 +581,7 @@ the holder, this should be combined with @proof_device_binding and
     [Bulletproofs], [], [],
       [],
       [],
-    [Longfellow], [], [],
+    [Longfellow], [410ms], [291kb],
       [],
       []
   ),
@@ -611,6 +629,13 @@ arguments:
 )
 
 == Proof of Concept 2: Docknetwork and Cryptographic Accumulators
+
+== Longfellow
+
+The publication @FS24 and the measurements published there do not include
+proof of non revocation.
+The published code includes the proof that a credential is not revoked
+on a given status list but there are no formal measurements for this proof.
 
 == Summary
 
