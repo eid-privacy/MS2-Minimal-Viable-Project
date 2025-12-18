@@ -81,15 +81,15 @@ the most sense to implement.
     table.header([Work Package], [Solution], [Time / Size], [Comments]),
     table.cell(rowspan:3)[WP3 - Device Binding], [ZKAttest], [5s / 10kB], [@zkattest-rs],
     [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP3-Holder-Binding],
-    [Longfellow], [1s / 300kB], [@FS24],
+    [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP4 - Issuer Signature], [BBS], [5s / 10kB], [@zkattest-rs],
     [Noir], [0.7s / 16kB], [https://github.com/eid-privacy/WP4-Unlinkable-Anonymous-Credentials],
-    [Longfellow], [1s / 300kB], [@FS24],
+    [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP5 - Predicates], [BBS], [5s / 10kB], [@zkattest-rs],
     [Noir], [0.2s / 16kB], [https://github.com/eid-privacy/WP5-Predicate-Proofs],
-    [Longfellow], [1s / 300kB], [@FS24],
+    [Longfellow], [.47s / 300kb], [@FS24],
 
     [WP6 - Non-Revocation], [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP6-Revocation],
   ),
@@ -123,14 +123,14 @@ more details in our Taxonomy Paper @EIDTaxonomy.
 Throughout our work we make extensive use of Zero-Knowledge Proofs (ZKP).
 In the most generic terms, a ZKP is a protocol between a *Prover*, which has
 a secret *Witness*, and a *Verifier*, which wants to be sure that the
-witness corresponds to an agreed-upon *Statement*, without learning
+witness satisfies an agreed-upon *Statement*, without learning
 more about the witness.
 An example for e-ID is a holder (prover) with their credential (witness),
-which creates a *Proof* that they are aged 18 or over (statement),
-to convince an internet service (verifier), without them learning the exact
-age.
+which creates a *Proof* that they are 18 years old or older (statement),
+to convince an internet service (verifier), without the service learning the exact
+age or any other information that uniquely identify the credential or the holder.
 
-The challenge in ZKPs are manyfold:
+The challenges in ZKPs are manyfold:
 
 / Size of the proof: some ZKPs create proof sizes in the range of gigabytes,
   which is too big to be sent from a holder to a verifier in an e-ID
@@ -149,6 +149,7 @@ It is to be noted that this evaluation can greatly differ depending on the
 goals for these algorithms.
 Also, when writing Noir, we refer ourselves to the version 1.0.0-beta15
 with the Barretenberg backend using hyper-plonk.
+#todo[I found hyper-plonk but not in barretenberg, it seems to be supporting ultrahonk and superhonk]
 
 #figure(
   table(
@@ -158,7 +159,7 @@ with the Barretenberg backend using hyper-plonk.
     [ZKAttest], [OK], [OK], [OK], [Limited],
     [Noir], [OK], [OK..Bad], [Some], [OK],
     [Longfellow], [OK], [OK], [Some], [No],
-    [Bulletproof], [#todo[Find bulletproof characteristics]], [], [], [],
+    [Bulletproof], [OK], [Bad], [OK..Some], [Some (range proofs)],
     [BBS], [OK], [OK], [OK], [Some]
   ),
   caption: [Short comparison of algorithms used in this report]
@@ -166,7 +167,7 @@ with the Barretenberg backend using hyper-plonk.
 
 == Recap of Credentials
 
-An e-ID system is based upon *Credentials* which hold the information about a user
+An e-ID system is based on *Credentials* which hold the information about a user
 and are signed by the issuers.
 In EU and CH, but also some places in the USA, the following credential types are
 used:
@@ -174,19 +175,19 @@ used:
 / mDoc / mDL: mobile driving license credential based on ISO/IEC 18013-5:2021
 / SD-JWT: generic credential with selective disclosure capabilities
 
-For our tests, we also used the following two credentials:
+For our tests, we also used the following types credentials:
 
 / BBS: a special signature type which allows to create simple proofs about the
   attributes of a credential
-/ Flat: the simplest credential where every attribute is represented with a
-  fixed size in all credentials
+/ Flat: simple credentials where every attribute is contained within fixed-sized fields
+  in a byte-array
 
 === Flat Credentials
 
 In this MS2, we considered a *Flat* credential with fixed-size fields.
 This is not how current SD-JWT and mDoc are used, but gave us an easy way
 to test if our algorithms work.
-Here is the information stored in the credentials:
+The information stored in the credentials consists of:
 
 - *First Name* - up to 32 characters
 - *Last Name* - up to 32 characters
@@ -196,8 +197,8 @@ Here is the information stored in the credentials:
   characters
 
 This gives a total of 218 bytes for the credential.
-We also worked with SD-JWT credentials and are able to use them in noir,
-but for the proof-of-concept, we stayed with the *Flat* credential.
+We also worked with SD-JWT credentials and are able to write noir circuits to prove statements about them.
+For the proof-of-concept however, we stayed with the *Flat* credential.
 It is also important to note that these credentials never leave the
 phone of the holder, as the credential is always used for the *private input*
 of the noir circuit (see @Noir_101).
@@ -207,7 +208,18 @@ verifier, plus the proof that the circuit is correct.
 
 === Privacy in Swiyu
 
-#todo[Explain selective disclosure and batch issuance]
+Holder's privacy in the current version of Swiyu (and the EUID) hinges on two mechanisms when it comes to the
+credential format:
+/ Selective disclosure: the credential contains hashes of the holder's attribute value rather than the values
+  themselves. This allows the holder to share actual values on a granual and case-by-case basis,
+  and the holder to verify that these values match the hashes signed by the issuer of the credential.
+/ Batch issuance: an SD-JWT or mDoc credential holds a lot of uniquely identifying data, whether technical or related
+  to the natural person it describes. To avoid issuers and verifiers tracking users across interactions by keeping
+  track of these unique pieces of data, Swiyu (and the EU) plan on issuing batches of single-use credentials to holders.
+  Each credential is meant to be presented once to prevent reappearance of these uniquely identifying values. While this
+  solution technically works, it involves a sizeable overhead for issuers (more cryptographic work), and holders
+  (careful keys and credentials management).
+#todo[Review this.]
 
 == Recap of Needed Elements
 
@@ -255,8 +267,8 @@ in their development:
   express constraints on the data which help to catch errors very early in development.
 / Noir@noir_lang: has been developed for the blockchain world, with the goal to be
   *The Programming Language for Private Apps*.
-  It suits our use-case, as it allows to write a program on a very abstract level,
-  which is then used to create a ZKP circuit and a proof.
+  It suits our use-case, as it allows writing programs on a very abstract level,
+  which are then turned into ZKP circuits and proofs.
   While its development is fast, and allows outside contributions like ours, it is
   geared towards blockchains.
   Noir is currently optimized for fast verification time, which makes sense in a blockchain,
@@ -265,8 +277,8 @@ in their development:
 
 === Noir <Noir_101>
 
-With Noir it is relatively easy to create your own ZKP on complex statements,
-and use it in your own products.
+With Noir it is relatively easy to create ZKPs on complex statements,
+and use them in independent products.
 Like with all cryptography, it is important to know the caveats and how to optimize
 the program.
 For our proof-of-concepts, we concentrated on the right things to prove,
@@ -297,18 +309,18 @@ When defining a ZKP with Noir, the following parts are important:
 
 For this first work package where we created a proof-of-concept, we had to
 solve the following problem:
-to avoid copying of credentials from one device to another, the holder must
-provide a signature created by the *Secure Element* of their mobile phone.
+in order to prevent fraud by copying credentials from one device to another,
+the holder must provide a signature created by the *Secure Element* of their mobile phone.
 As it's technically very difficult to move the private key from one
 secure element to another, the verifier can suppose that this signature
-proves that the holder still uses the same mobile phone.
-But the following two problems exist with this solution:
+proves that the holder presents a credential that was issued to the same phone that is presenting.
+The following two problems exist with this solution:
 
 1. Current secure elements can only produce signatures of a specific type:
-  ECDSA over P-256. Unfortunately these signatures are difficult to integrate
-  in ZKPs.
-2. To verify the signature, the verifier must know the public key.
-  But this information is unique, and can be used to track the holder.
+   ECDSA over P-256. Unfortunately these signatures are difficult to integrate
+   in ZKPs.
+2. To verify the signature, the verifier must know the public key,
+   but this information is uniquely identifying and can be used to track the holder.
 
 == Proof of Concept 1: Noir
 
@@ -338,7 +350,7 @@ the #challenge, which can be verified by the #Pub_holder.
 But as the only public input is the #challenge, the verifier doesn't learn
 anything which allows it to link two proofs with each other.
 
-You can find the performance of this circuit in the summary of this section.
+The performance of this circuit can be found in the summary of this section.
 
 == Proof of Concept 2: Docknetwork and BBS, ZKAttest
 
@@ -355,7 +367,7 @@ methods, to create the full proofs.
 While the ZKP is easy to understand, and security audits are available for
 some of the libraries, BBS is not standardized, and it is not clear if
 it ever will be.
-Some comments write that BBS is not proven, which is wrong, while NIST
+Some comments write that BBS is not proven #todo[not proven secure ? Or more in the sense "not battle tested"?], which is wrong, while NIST
 doesn't want to standardize non-PQS algorithms #todo[Add references].
 
 == Longfellow
@@ -368,7 +380,7 @@ holder binding and proof of non-revocation.
 The circuits are well-optimized but also hard to read/understand/audit.
 As a result they are hard to adapt to other scenarios such as presenting an SD-JWT.
 
-The prover time for an mDoc presentation, as benchmarked in the paper, sits at 1.2s for a size less than
+The prover time for an mDoc presentation, as benchmarked in the paper, sits at 1.2s with a proof size under
 1MB (although no details are provided on this) and the verifier time is recorded as 0.7s.
 
 There is no benchmark specific to the holder binding proof.
@@ -449,15 +461,15 @@ You can find the performance of this circuit in the summary of this section.
 
 == Longfellow <proof_issuer_signature_longfellow>
 
-The longfellow paper @FS24 benchmark the presentation of a credential
+The longfellow paper @FS24 benchmarks the presentation of a credential
 comparable to our flat credential in section 6.1.
 The reported prover time is 470ms on a Pixel Pro 6 for a proof size of 291kb.
 This includes:
-  * parsing the credential and extracting: holder key, age attribute, valid_from, and valid_until timestamps
-  * proving the credential is well signed for a given issuer key
-  * the proof that the credential holder is older than 18
-  * proof that the credential is still valid (using the parsed timestamps)
-This benchmark provide an upper-bound that we can compare to other solutions.
+  - parsing the credential and extracting: holder key, age attribute, valid_from, and valid_until timestamps
+  - proving the credential is well signed for a given issuer key
+  - the proof that the credential holder is older than 18
+  - proof that the credential is still valid (using the parsed timestamps)
+This benchmark provides an upper-bound that we can compare to other solutions.
 
 == Summary
 
@@ -481,11 +493,11 @@ This benchmark provide an upper-bound that we can compare to other solutions.
 
 = G5.2 - Proof of Predicates <proof_predicate>
 
-Proving the possession of a credential is not interesting for a verifier.
-Before it can offer a service to the holder, one or more of the attributes
-must be revealed to the verifier.
+For the verifier, ensuring the honest possession of a credential is not an end in itself.
+Before it can offer a service to the holder, the verifier actually wants to learn about one or more of the attributes
+from the holder's credential.
 Instead of revealing the full attribute, the holder can also disclose only
-a predicate to the verifier, and thus keep some anonymity.
+a predicate, a statement about the actual attribute's value, to the verifier, and thus retain more privacy.
 In our proof-of-concept, we consider the following revelations by the holder:
 
 / Selective Disclosure: allows the holder to fully reveal one or more of
@@ -515,7 +527,7 @@ attribute relationships: the credential holds a list of pre-computed
 comparisons, like `age <= 25`, `age <= 35`, and so on.
 The holder can then reveal one or more of these entries to the verifier.
 
-One of the big disadvantages of using `sha256` for selective disclosure in
+One of the big disadvantages of using this salted-hashes approach for selective disclosure in
 this way is the linkability of the presentations:
 every time a holder presents their credential, the verifier can look
 at the hashes, and create a unique fingerprint of the holder, and then
