@@ -1,5 +1,5 @@
 #import "@preview/unequivocal-ams:0.1.2": ams-article, theorem, proof
-
+#show link: underline
 #show: ams-article.with(
   title: [Innosuisse Report G0.2],
   paper-size: "a4",
@@ -706,7 +706,7 @@ the development of two of them.
 This allowed us to gauge the possibility of pushing new pull requests,
 and to see whether the project is alive.
 
-For [Docknetwork](https://github.com/docknetwork/crypto), the experience
+For #link("https://github.com/docknetwork/crypto")[Docknetwork], the experience
 was a mixed bag: in the beginning, the main author, lovesh, was employed
 by the startup behind the library.
 During this time, changes were readily evaluated and then merged.
@@ -715,10 +715,10 @@ to oversee changes to the libraries.
 This led us to re-evaluate our goal of using the docknetwork library
 as the basis for our work.
 
-Regarding [Noir](https://noir-lang.org/), it is supported by a much
+Regarding #link("https://noir-lang.org/")[Noir], it is supported by a much
 larger community, and also has backing from a diverse community, see
-[Investors](https://aztec.network/basics).
-The repository for the [noir language](https://github.com/noir-lang/noir)
+#link("https://aztec.network/basics")[Investors].
+The repository for the #link("https://github.com/noir-lang/noir")[noir language]
 is active and allowed us to participate easily with fast response
 times from the community.
 Also the fact that noir has a much easier and accessible system to
@@ -729,15 +729,15 @@ create proofs make us believe that it is the good way to go.
 As a response to our reports, blog posts, and visits at conferences
 we had various discussions with our partners and other entities:
 
-- [FOITT](https://www.bit.admin.ch/en) and [FOJ](https://www.bj.admin.ch/bj/en/home.html),
+- #link("https://www.bit.admin.ch/en")[FOITT] and #link("https://www.bj.admin.ch/bj/en/home.html")[FOJ],
 who are developing Swiyu, allowed us to get feedback on our current
 implementation and ideas.
 The discussions were also important because it allowed us to learn
 new challenges for them, and get a first impression of our proposed
 algorithms.
-- [Ubique](https://ubique.ch/) are working on their
-[Heidi](https://heidi-universe.ch/en/index.html) implementation of the
-e-ID, supported by the [SPRIN-D](https://www.sprind.org/en/words/magazine/eudi-wallet-prototypes-third-stage)
+- #link("https://ubique.ch/")[Ubique] are working on their
+#link("https://heidi-universe.ch/en/index.html")[Heidi] implementation of the
+e-ID, supported by the #link("https://www.sprind.org/en/words/magazine/eudi-wallet-prototypes-third-stage")[SPRIN-D]
 Federal Agency from Germany.
 They published the code using ZKAttest, and gave us valuable feedback
 on our choices and search in new algorithms.
@@ -753,7 +753,7 @@ requirements for digital societies, in particular e-ID.
 In June 2025 we held a hands-on workshop on our current understanding of
 the privacy-preserving algorithms available for e-ID.
 The code and slides are available on the github repo
-[c4dt/how-2025-06-eID](https://github.com/c4dt/how-2025-06-eID).
+#link("https://github.com/c4dt/how-2025-06-eID")[c4dt/how-2025-06-eID].
 Around 20 people from C4DT partners and the Swiss government agencies
 were present and gave us valuable feedback.
 
@@ -761,7 +761,7 @@ were present and gave us valuable feedback.
 
 To help discussions regarding e-ID and making sure we use the correct terms
 when talking about the different parts of the system, we set out to write
-a [Taxonomy of digital identity systems](https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html).
+a #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[Taxonomy of digital identity systems].
 In 2026 we will update this whitepaper and turn it into a full systematization
 of knowledge paper by measuring various solutions proposed for privacy-preserving
 solutions.
@@ -771,13 +771,13 @@ solutions.
 We wrote a number of blog posts to be used as a basis of discussion with
 interested parties in e-ID:
 
-- [Crescent and Longfellow](https://eid-privacy.github.io/wp0/2025/11/28/crescent-longfellow-showdown.html)
-- [Comparing ZK systems](https://eid-privacy.github.io/wp1/2025/10/21/comparing-implemented-zk-systems.html)
-- [Overview of Privacy and Unlinkability](https://eid-privacy.github.io/wp4/2025/10/20/overview.html)
-- [Resources on Zero-knowledge Systems and Proofs](https://eid-privacy.github.io/wp2/2025/09/17/privacy-enhancing-resources.html)
-- [Taxonomy of digital identity systems](https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html)
-- [Taxonomy 101](https://eid-privacy.github.io/wp1/2025/06/10/taxonomy-101.html)
-- [Open Source SWIYU Demo application](https://eid-privacy.github.io/wp1,/wp2/2025/05/23/swiyu-demo-announcement.html)
+- #link("https://eid-privacy.github.io/wp0/2025/11/28/crescent-longfellow-showdown.html")[Crescent and Longfellow]
+- #link("https://eid-privacy.github.io/wp1/2025/10/21/comparing-implemented-zk-systems.html")[Comparing ZK systems]
+- #link("https://eid-privacy.github.io/wp4/2025/10/20/overview.html")[Overview of Privacy and Unlinkability]
+- #link("https://eid-privacy.github.io/wp2/2025/09/17/privacy-enhancing-resources.html")[Resources on Zero-knowledge Systems and Proofs]
+- #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[Taxonomy of digital identity systems]
+- #link("https://eid-privacy.github.io/wp1/2025/06/10/taxonomy-101.html")[Taxonomy 101]
+- #link("https://eid-privacy.github.io/wp1,/wp2/2025/05/23/swiyu-demo-announcement.html")[Open Source SWIYU Demo application]
 
 = Future Work
 
