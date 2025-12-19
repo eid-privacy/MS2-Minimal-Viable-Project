@@ -716,7 +716,9 @@ Our next work items will involve deploying a prover and verifier for our Noir ci
 if relevant, Longfellow prover and verifier as well.
 This in order to identify and research-engineering gap remaining as well as to start identify resources/performance
 trade-off for such solutions in enterprise products.
+
 We also aim at optimizing the proving time to reach acceptably smooth interactions for holders.
+
 We will further investigate possibilities to bring prover-friendly proof systems to the Noir backends as well as
 follow Google and Dyne.org's work on a programmer/auditor friendly language for circuit writing compatible with
 Longfellow.
