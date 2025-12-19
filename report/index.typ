@@ -46,6 +46,10 @@
 #let Pr_non-rev = $"proof"_"non-rev"$
 #let Sig_valid(pub, sig, msg) = $"signature_valid"( #pub, #sig, #msg )$
 
+#let link_zkp_pocs_noir(test) = link(
+  "https://github.com/eid-privacy/zkp-pocs/blob/main/noir/" + test + "/src/main.nr",
+  test
+)
 
 = Introduction
 
@@ -79,19 +83,28 @@ the most sense to implement.
   table(
     columns: 4,
     table.header([Work Package], [Solution], [Time / Size], [Comments]),
-    table.cell(rowspan:3)[WP3 - Device Binding], [ZKAttest], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP3-Holder-Binding],
+    table.cell(rowspan:3)[WP3 - Device Binding],
+    [Noir], [0.8s / 16kB], [#link_zkp_pocs_noir("c03_holder_binding")],
+    [Docknetwork/ZKAttest], [18s / 186kB], [@zkattest-rs],
     [Longfellow], [1s / 300kb], [@FS24],
 
-    table.cell(rowspan:3)[WP4 - Issuer Signature], [BBS], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.7s / 16kB], [https://github.com/eid-privacy/WP4-Unlinkable-Anonymous-Credentials],
+    table.cell(rowspan:3)[WP4 - Issuer Signature],
+    [Noir], [0.7s / 16kB], [#link_zkp_pocs_noir("c04_issuer_signature")],
+    [Docknetwork/BBS], [0.1s / 0.5kB], [@docknetwork],
     [Longfellow], [1s / 300kb], [@FS24],
 
-    table.cell(rowspan:3)[WP5 - Predicates], [BBS], [5s / 10kB], [@zkattest-rs],
-    [Noir], [0.2s / 16kB], [https://github.com/eid-privacy/WP5-Predicate-Proofs],
+    table.cell(rowspan:3)[WP5 - Predicates],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c05_age_verification")],
+    [Docknetwork/Bulletproofs], [0.5s / 2kB], [@docknetwork],
     [Longfellow], [.47s / 300kb], [@FS24],
 
-    [WP6 - Non-Revocation], [Noir], [0.8s / 16kB], [https://github.com/eid-privacy/WP6-Revocation],
+    table.cell(rowspan:2)[WP6 - Non-Revocation],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c06_non_revocation")],
+    [Docknetwork/Accumulators], [0.2s / 0.7kB], [@docknetwork],
+
+    table.cell(rowspan:2)[WP3..WP6],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c09_full_proof")],
+    [Docknetwork/All], [19s / 190kB], [@zkattest-rs],
   ),
   caption: [Summary of our proof-of-concepts]
 ) <table_summary>
@@ -399,7 +412,7 @@ which we can see as an upperbound on the proof length for holder binding.
     [Noir], [0.8s], [16kB],
       [],
       [],
-    [BBS, ZKAttest], [1.2s], [16kB],
+    [Docknetwork/ZKAttest], [18s], [186kB],
       [Simple proof, understandable and verifiable with reasonable level of expertise],
       [Uses BBS, a non-standardized credential format which is not PQS],
     [Longfellow], [\~0.08s], [\<300kb],
@@ -481,7 +494,7 @@ This benchmark provides an upper-bound that we can compare to other solutions.
     [Noir], [0.7s], [16kB],
       [],
       [],
-    [BBS], [], [],
+    [Docknetwork/BBS], [0.1s], [0.5kB],
       [],
       [],
     [Longfellow], [0.470s], [291kb],
@@ -590,7 +603,7 @@ in other variants.
     [Noir], [0.2s], [16kB],
       [],
       [],
-    [Bulletproofs], [], [],
+    [Docknetwork/Bulletproofs], [0.5s], [2kB],
       [],
       [],
     [Longfellow], [410ms], [291kb],
@@ -687,7 +700,7 @@ on a given status list but there are no formal measurements for this proof.
     [Noir], [0.6s], [16kB],
       [],
       [],
-    [Accumulators], [], [],
+    [Docknetwork/Accumulators], [0.2s], [0.7kB],
       [],
       [],
     [Longfellow], [], [],
@@ -696,6 +709,32 @@ on a given status list but there are no formal measurements for this proof.
   ),
   caption: [Summary of G3.2]
 )
+
+= Just Because - All of the Above
+
+Because the time for all of these proofs were already so close to what we
+expected, we added a fifth proof which combines all of the above.
+It proves all of the elements of G3.2-G6.2 at the same time, and the
+performance on a MacBook pro is outstanding:
+
+#figure(
+  table(
+    columns: 5,
+    align:(left),
+    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    [Noir], [2.2s], [16kB],
+      [Written in an easy-to learn language which is very close to Rust.],
+      [Currently optimized for blockchains: very fast verification time, but
+        slow prover time.],
+    [Docknetwork/All], [19s], [190kB],
+      [],
+      [],
+  ),
+  caption: [Summary of the full proof]
+)
+
+We will definitely continue to pursue Noir and make sure that the framework
+delivers security as good as speed.
 
 = Byproducts
 
