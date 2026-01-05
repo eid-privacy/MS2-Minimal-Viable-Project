@@ -46,9 +46,13 @@
 #let Pr_non-rev = $"proof"_"non-rev"$
 #let Sig_valid(pub, sig, msg) = $"signature_valid"( #pub, #sig, #msg )$
 
-#let link_zkp_pocs_noir(test) = link(
+#let link_zkp_pocs_noir(text, test) = link(
   "https://github.com/eid-privacy/zkp-pocs/blob/main/noir/" + test + "/src/main.nr",
-  test
+  text
+)
+#let link_zkp_pocs_dock(text, test) = link(
+  "https://github.com/eid-privacy/zkp-pocs/blob/main/docknetwork/tests/" + test + ".rs",
+  text
 )
 
 = Introduction
@@ -82,29 +86,29 @@ the most sense to implement.
 #figure(
   table(
     columns: 4,
-    table.header([Work Package], [Solution], [Time / Size], [Comments]),
+    table.header([Work Package], [Solution], [Overall Time / Proof Size], [Links]),
     table.cell(rowspan:3)[WP3 - Device Binding],
-    [Noir], [0.8s / 16kB], [#link_zkp_pocs_noir("c03_holder_binding")],
-    [Docknetwork/ZKAttest], [18s / 186kB], [@zkattest-rs],
+    [Noir], [0.8s / 16kB], [#link_zkp_pocs_noir("holder_binding", "c03_holder_binding")],
+    [Docknetwork/ZKAttest], [18s / 186kB], [#link_zkp_pocs_dock("holder_binding", "c03_holder_binding")],
     [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP4 - Issuer Signature],
-    [Noir], [0.7s / 16kB], [#link_zkp_pocs_noir("c04_issuer_signature")],
-    [Docknetwork/BBS], [0.1s / 0.5kB], [@docknetwork],
+    [Noir], [0.7s / 16kB], [#link_zkp_pocs_noir("issuer_signature", "c04_issuer_signature")],
+    [Docknetwork/BBS], [0.1s / 0.5kB], [#link_zkp_pocs_dock("issuer_signature", "c04_issuer_signature")],
     [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP5 - Predicates],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c05_age_verification")],
-    [Docknetwork/Bulletproofs], [0.5s / 2kB], [@docknetwork],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("age_verification", "c05_age_verification")],
+    [Docknetwork/Bulletproofs], [0.5s / 2kB], [#link_zkp_pocs_dock("age_verification", "c05_age_verification")],
     [Longfellow], [.47s / 300kb], [@FS24],
 
     table.cell(rowspan:2)[WP6 - Non-Revocation],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c06_non_revocation")],
-    [Docknetwork/Accumulators], [0.2s / 0.7kB], [@docknetwork],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("non_revocation", "c06_non_revocation")],
+    [Docknetwork/Accumulators], [0.2s / 0.7kB], [#link_zkp_pocs_dock("non_revocation", "c06_non_revocation")],
 
     table.cell(rowspan:2)[WP3..WP6],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("c09_full_proof")],
-    [Docknetwork/All], [19s / 190kB], [@zkattest-rs],
+    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("full_proof", "c09_full_proof")],
+    [Docknetwork/All], [19s / 190kB], [#link_zkp_pocs_dock("full_proof", "c09_full_proof")],
   ),
   caption: [Summary of our proof-of-concepts]
 ) <table_summary>
@@ -161,8 +165,7 @@ presented in this report and how they fare for the operations used.
 It is to be noted that this evaluation can greatly differ depending on the
 goals for these algorithms.
 Also, when writing Noir, we refer ourselves to the version 1.0.0-beta15
-with the Barretenberg backend using hyper-plonk.
-#todo[I found hyper-plonk but not in barretenberg, it seems to be supporting ultrahonk and superhonk]
+with the Barretenberg backend using ultra-honk.
 
 #figure(
   table(
@@ -177,6 +180,14 @@ with the Barretenberg backend using hyper-plonk.
   ),
   caption: [Short comparison of algorithms used in this report]
 ) <table_zkp_comparison>
+
+We can recap the three main solution explored here like the following:
+
+/ Noir: Written in an easy-to learn language which is very close to Rust.
+  Very fast proving time, but slow verification time.
+/ ZKAttest: Simple proof, understandable and verifiable with reasonable level of expertise.
+  Uses BBS, a non-standardized credential format which is not PQS.
+/ Longfellow: Fast, post-quantum secure. But circuit auditing and writing is difficult.
 
 == Recap of Credentials
 
@@ -288,6 +299,23 @@ in their development:
   but for our purposes we're investigating to rewrite a prover and optimize for
   fast prover time.
 
+=== Docknetwork <Docknetwork_101>
+
+This library is a collection of the most popular algorithms around privacy preserving
+algorithms, and includes libraries to use various credential formats, electronic
+signatures, and proof systems.
+It includes enough tests to make sure its functionality is correct, and has both a
+rust and a typescript interface, which makes it ready for wide use.
+There is also a ZKP framework based on LegoGroth @CFQ19, which allows to link several
+proofs like
+
+- The #Sig_cred on #credential can be verified by #Pub_issuer
+- The number 'birth_date' is more than 25 years before the #timestamp_now
+- The number 'birth_date' is the same as the value of the field 'birth_date'
+  in the #credential
+
+where only #Pub_issuer and #timestamp_now are public.
+
 === Noir <Noir_101>
 
 With Noir it is relatively easy to create ZKPs on complex statements,
@@ -380,8 +408,19 @@ methods, to create the full proofs.
 While the ZKP is easy to understand, and security audits are available for
 some of the libraries, BBS is not standardized, and it is not clear if
 it ever will be.
-Some comments write that BBS is not proven #todo[not proven secure ? Or more in the sense "not battle tested"?], which is wrong, while NIST
-doesn't want to standardize non-PQS algorithms #todo[Add references].
+During the discussions to include BBS in the EUDI-ARF @EUDI-ARF, there
+were multiple comments about standardization and security of the BBS
+protocol in the discussion at @EUDI-ARF-BBS-1.
+A team of mostly European cryptographers published an open letter and
+proposed the BBS family of anonymous credentials, which sparked a new
+discussion and more interest in this protocol: @EUDI-ARF-BBS-2.
+In the following process for the EUDI-ARF, it has been decided to open
+*Topics* for subsequent versions for the EUDI, and BBS has been included
+as one potential signature scheme - discussion at @EUDI-ARF-BBS-3, and
+the *Topic G* at @EUDI-ARF-TOPIC-G.
+Finally, if a standardization by NIST would be required, this would run
+counter their stated goal to deprecate non-PQS algorithms by
+2030 and disallow them by 2035, as written in @NIST-IR-8547.
 
 == Longfellow
 
@@ -406,18 +445,15 @@ which we can see as an upperbound on the proof length for holder binding.
 
 #figure(
   table(
-    columns: 5,
+    columns: 4,
     align:(left),
-    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
     [Noir], [0.8s], [16kB],
-      [],
-      [],
+      [Only includes the #Pr_sig_ch, not the #Pr_sig_cred],
     [Docknetwork/ZKAttest], [18s], [186kB],
-      [Simple proof, understandable and verifiable with reasonable level of expertise],
-      [Uses BBS, a non-standardized credential format which is not PQS],
+      [Only works with BBS from the issuer side],
     [Longfellow], [\~0.08s], [\<300kb],
-      [Fast, PQS],
-      [Circuit auditing and writing is difficult]
+      [None],
   ),
   caption: [Summary of G3.2]
 )
@@ -472,6 +508,12 @@ You can find the performance of this circuit in the summary of this section.
 
 == Proof of Concept 2: Docknetwork and BBS
 
+As can be seen in @BBS04, this is the specific problem that the BBS
+signature solves: how to prove that a credential has a valid signature
+without revealing the signature.
+So it is to be expected that the overall time and the proof size are
+optimal for docknetwork in this use case.
+
 == Longfellow <proof_issuer_signature_longfellow>
 
 The longfellow paper @FS24 benchmarks the presentation of a credential
@@ -486,20 +528,18 @@ This benchmark provides an upper-bound that we can compare to other solutions.
 
 == Summary
 
+#todo[Longfellow: Link to the value in the paper]
 #figure(
   table(
-    columns: 5,
+    columns: 4,
     align:(left),
-    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
     [Noir], [0.7s], [16kB],
-      [],
-      [],
+      [Uses the secp256k1 curve instead of the secp256r1],
     [Docknetwork/BBS], [0.1s], [0.5kB],
-      [],
-      [],
+      [Optimal use-case for BBS],
     [Longfellow], [0.470s], [291kb],
-      [],
-      []
+      [Also includes the scanning of the mdoc]
   ),
   caption: [Summary of G4.2]
 )
@@ -583,6 +623,16 @@ the holder, this should be combined with @proof_device_binding and
 
 == Proof of Concept 2: Docknetwork and Bulletproofs
 
+For docknetwork, we use its bulletproof implementation, which allows to do
+a similar proof to the Noir proof:
+
+- there exists a #credential which is signed by #Pub_issuer
+- the same #credential has a value
+- this value is more than 18 years before the #timestamp_now
+
+Again, only the #Pub_issuer and the #timestamp_now are publicly disclosed,
+while the #credential itself stays private.
+
 == Longfellow
 
 We use the numbers from @FS24 section 6.1 again.
@@ -595,20 +645,18 @@ in other variants.
 
 == Summary
 
+#todo[Longfellow: Link to the value in the paper]
 #figure(
   table(
-    columns: 5,
+    columns: 4,
     align:(left),
-    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
     [Noir], [0.2s], [16kB],
-      [],
-      [],
+      [Only range-proof],
     [Docknetwork/Bulletproofs], [0.5s], [2kB],
-      [],
-      [],
+      [The credential is presented as a BBS],
     [Longfellow], [410ms], [291kb],
-      [],
-      []
+      [None]
   ),
   caption: [Summary of G3.2]
 )
@@ -683,6 +731,19 @@ time to create the proof can be many seconds.
 
 == Proof of Concept 2: Docknetwork and Cryptographic Accumulators
 
+For this proof, we use the cryptographic accumulators present in the
+docknetwork library.
+Then we produce a proof for:
+
+- there exists a #credential which is signed by #Pub_issuer
+- the same #credential has a value
+- this value is not present in the cryptographic accumulator
+
+The big downside with using a cryptographic accumulator is that it
+needs to be kept up-to-date both by the issuer and all the holders.
+This operation can get quite big and expensive time-wise, once
+there are many (more than 10'000) holders present.
+
 == Longfellow
 
 The publication @FS24 and the measurements published there do not include
@@ -692,20 +753,19 @@ on a given status list but there are no formal measurements for this proof.
 
 == Summary
 
+#todo[Longfellow: Link to the value in the paper]
 #figure(
   table(
-    columns: 5,
+    columns: 4,
     align:(left),
-    table.header([Algorithm], [time], [size], [Pro], [Con]),
+    table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
     [Noir], [0.6s], [16kB],
-      [],
-      [],
+      [Uses a specific revocation-list format],
     [Docknetwork/Accumulators], [0.2s], [0.7kB],
-      [],
-      [],
+      [Updates to the non-revocation proofs on the holder side are expensive],
     [Longfellow], [], [],
-      [],
-      []
+      [Even though there is code available in the repository, we were not able
+        to run it]
   ),
   caption: [Summary of G3.2]
 )
@@ -717,24 +777,25 @@ expected, we added a fifth proof which combines all of the above.
 It proves all of the elements of G3.2-G6.2 at the same time, and the
 performance on a MacBook pro is outstanding:
 
+#todo[Longfellow: Link to the value in the paper]
 #figure(
   table(
-    columns: 5,
+    columns: 4,
     align:(left),
-    table.header([Algorithm], [time], [size], [Pro], [Con]),
-    [Noir], [2.2s], [16kB],
-      [Written in an easy-to learn language which is very close to Rust.],
-      [Currently optimized for blockchains: very fast verification time, but
-        slow prover time.],
-    [Docknetwork/All], [19s], [190kB],
-      [],
-      [],
+    table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
+    [Noir], [2.2s], [16kB], [],
+    [Docknetwork], [19s], [190kB], [],
+    [Longfellow], [??], [??], [Does not contain the revocation verification]
   ),
   caption: [Summary of the full proof]
 )
 
 We will definitely continue to pursue Noir and make sure that the framework
 delivers security as good as speed.
+
+= Reproducing Measurements
+
+#todo[Follow the README.md in the repository]
 
 = Byproducts
 
@@ -810,13 +871,13 @@ solutions.
 We wrote a number of blog posts to be used as a basis of discussion with
 interested parties in e-ID:
 
-- #link("https://eid-privacy.github.io/wp0/2025/11/28/crescent-longfellow-showdown.html")[Crescent and Longfellow]
-- #link("https://eid-privacy.github.io/wp1/2025/10/21/comparing-implemented-zk-systems.html")[Comparing ZK systems]
-- #link("https://eid-privacy.github.io/wp4/2025/10/20/overview.html")[Overview of Privacy and Unlinkability]
-- #link("https://eid-privacy.github.io/wp2/2025/09/17/privacy-enhancing-resources.html")[Resources on Zero-knowledge Systems and Proofs]
-- #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[Taxonomy of digital identity systems]
-- #link("https://eid-privacy.github.io/wp1/2025/06/10/taxonomy-101.html")[Taxonomy 101]
-- #link("https://eid-privacy.github.io/wp1,/wp2/2025/05/23/swiyu-demo-announcement.html")[Open Source SWIYU Demo application]
+- #link("https://eid-privacy.github.io/wp1,/wp2/2025/05/23/swiyu-demo-announcement.html")[2025/05/23 - Open Source SWIYU Demo application]
+- #link("https://eid-privacy.github.io/wp1/2025/06/10/taxonomy-101.html")[2025/06/10 - Taxonomy 101]
+- #link("https://eid-privacy.github.io/wp4/2025/10/20/overview.html")[2025/10/20 - Overview of Privacy and Unlinkability]
+- #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[2025/09/17 - Taxonomy of digital identity systems]
+- #link("https://eid-privacy.github.io/wp2/2025/09/17/privacy-enhancing-resources.html")[2025/09/17 - Resources on Zero-knowledge Systems and Proofs]
+- #link("https://eid-privacy.github.io/wp1/2025/10/21/comparing-implemented-zk-systems.html")[2025/10/21 - Comparing ZK systems]
+- #link("https://eid-privacy.github.io/wp0/2025/11/28/crescent-longfellow-showdown.html")[2025/11/28 - Crescent and Longfellow]
 
 = Future Work
 
@@ -831,4 +892,6 @@ We will further investigate possibilities to bring prover-friendly proof systems
 follow Google and Dyne.org's work on a programmer/auditor friendly language for circuit writing compatible with
 Longfellow.
 
-- put it all together
+Specifically for Noir, we will need to implement a verification using the secp256r1 curve, which is used
+in the issuer and the device signature. The current verification is on a secp256k1 curve, which is popular
+because it is used in bitcoin.
