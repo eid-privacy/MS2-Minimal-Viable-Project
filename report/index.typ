@@ -790,7 +790,7 @@ performance on a MacBook pro is outstanding:
     table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
     [Noir], [2.2s], [16kB], [],
     [Docknetwork], [19s], [190kB], [],
-    [Longfellow], [??], [??], [Does not contain the revocation verification]
+    [Longfellow], [1.170s\*], [\<1MB\*\*], [\*Does not include revocation verification. \*\*No formal numbers, just a comparison to Android's intent buffer.]
   ),
   caption: [Summary of the full proof]
 )
