@@ -244,11 +244,10 @@ credential format:
 / Batch issuance: an SD-JWT or mDoc credential holds uniquely identifying data, whether technical or related
   to the physical person it describes. To avoid issuers and verifiers tracking users across interactions by keeping
   track of these unique pieces of data, Swiyu (and the EU) plan on issuing batches of single-use credentials to holders.
-  #todo[from LG: add link to batch issuance whitepaper from Swiyu]
+  #todo[from LG: add link to batch issuance whitepaper from Swiyu - CH searches for it]
   Each credential is meant to be presented once to prevent reappearance of these uniquely identifying values. While this
   solution technically works, it involves a sizeable overhead for issuers (more cryptographic work), and holders
   (careful keys and credentials management).
-#todo[Review this. LG: LGTM]
 
 == Recap of Needed Elements
 
@@ -533,7 +532,6 @@ This benchmark provides an upper-bound that we can compare to other solutions.
 
 == Summary
 
-#todo[Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -544,7 +542,7 @@ This benchmark provides an upper-bound that we can compare to other solutions.
     [Docknetwork/BBS], [0.1s], [0.5kB],
       [Optimal use-case for BBS],
     [Longfellow], [0.470s], [291kb],
-      [Also includes the scanning of the mdoc]
+      [6.1 in @FS24, includes the scanning of the mdoc and a selective disclosure]
   ),
   caption: [Summary of G4.2]
 )
@@ -650,7 +648,7 @@ in other variants.
 
 == Summary
 
-#todo[Longfellow: Link to the value in the paper]
+#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -758,7 +756,7 @@ on a given status list but there are no formal measurements for this proof.
 
 == Summary
 
-#todo[Longfellow: Link to the value in the paper]
+#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -782,7 +780,7 @@ expected, we added a fifth proof which combines all of the above.
 It proves all of the elements of G3.2-G6.2 at the same time, and the
 performance on a MacBook pro is outstanding:
 
-#todo[Longfellow: Link to the value in the paper]
+#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -790,19 +788,18 @@ performance on a MacBook pro is outstanding:
     table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
     [Noir], [2.2s], [16kB], [],
     [Docknetwork], [19s], [190kB], [],
-    [Longfellow], [1.170s\*], [\<1MB\*\*], [\*Does not include revocation verification. \*\*No formal numbers, just a comparison to Android's intent buffer.]
+    [Longfellow], [1.170s\*], [\<1MB\*\*], [\*Does not include revocation verification.
+      \*\*No formal numbers, just a comparison to Android's intent buffer.]
   ),
   caption: [Summary of the full proof]
 )
-    #todo[should we put the overall times from the paper with an \* for the missing revocation ?
-      LG: yes, that was my idea here - but I didn't get them from the paper yet.]
 
 We will definitely continue to pursue Noir and make sure that the framework
 delivers security as good as speed.
 
 = Reproducing Measurements
 
-#todo[Follow the README.md in the repository]
+#todo[LG: Follow the README.md in the repository]
 
 = Byproducts
 
@@ -835,8 +832,6 @@ create proofs make us believe that it is the good way to go.
 
 As a response to our reports, blog posts, and visits at conferences
 we had various discussions with our partners and other entities:
-#todo[The formatting of new lines in the bullet points list is odd, should the spillover be indented ?
-  LG: yes, forgot to indent it - fixed now]
 - #link("https://www.bit.admin.ch/en")[FOITT] and #link("https://www.bj.admin.ch/bj/en/home.html")[FOJ],
   who are developing Swiyu, allowed us to get feedback on our current
   implementation and ideas.
@@ -869,9 +864,8 @@ were present and gave us valuable feedback.
 
 To help discussions regarding e-ID and making sure we use the correct terms
 when talking about the different parts of the system, we set out to write
-#todo[We've turned to links (which look very nice in the text I must say) but we started with regular bibliographic
-references, should we stick to one or just add the references here where it makes sense (eg: not the FOJ or FOITT links, but the taxonomy one)]
-a #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[Taxonomy of digital identity systems].
+a Taxonomy of digital identity systems @EIDTaxonomy.
+#todo[LG: look into how to make techreport reference with URL link].
 In 2026 we will update this whitepaper and turn it into a full systematization
 of knowledge paper by measuring various solutions proposed for privacy-preserving
 solutions.
