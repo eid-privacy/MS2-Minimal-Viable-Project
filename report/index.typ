@@ -244,7 +244,8 @@ credential format:
 / Batch issuance: an SD-JWT or mDoc credential holds uniquely identifying data, whether technical or related
   to the physical person it describes. To avoid issuers and verifiers tracking users across interactions by keeping
   track of these unique pieces of data, Swiyu (and the EU) plan on issuing batches of single-use credentials to holders.
-  #todo[from LG: add link to batch issuance whitepaper from Swiyu - CH searches for it]
+  The implementation intent for Swiyu is described in the
+  #link("https://github.com/swiyu-admin-ch/community/blob/main/tech-concepts/e-id-key-management-batch-issuance-and-renewal.md")[Key Management for e-ID - Batch Issuance and Renewal] technical paper.
   Each credential is meant to be presented once to prevent reappearance of these uniquely identifying values. While this
   solution technically works, it involves a sizeable overhead for issuers (more cryptographic work), and holders
   (careful keys and credentials management).
