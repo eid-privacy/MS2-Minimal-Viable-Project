@@ -649,7 +649,6 @@ in other variants.
 
 == Summary
 
-#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -660,7 +659,7 @@ in other variants.
     [Docknetwork/Bulletproofs], [0.5s], [2kB],
       [The credential is presented as a BBS],
     [Longfellow], [410ms], [291kb],
-      [None]
+      [From @FS24 section 6.1 on a phone, deducting the signature verification time for precision.]
   ),
   caption: [Summary of G3.2]
 )
@@ -757,7 +756,6 @@ on a given status list but there are no formal measurements for this proof.
 
 == Summary
 
-#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -768,7 +766,7 @@ on a given status list but there are no formal measurements for this proof.
     [Docknetwork/Accumulators], [0.2s], [0.7kB],
       [Updates to the non-revocation proofs on the holder side are expensive],
     [Longfellow], [], [],
-      [Even though there is code available in the repository, we were not able
+      [Even though there is code available in the repository that includes revocation, we were not able
         to run it]
   ),
   caption: [Summary of G3.2]
@@ -781,7 +779,6 @@ expected, we added a fifth proof which combines all of the above.
 It proves all of the elements of G3.2-G6.2 at the same time, and the
 performance on a MacBook pro is outstanding:
 
-#todo[CH: Longfellow: Link to the value in the paper]
 #figure(
   table(
     columns: 4,
@@ -790,7 +787,7 @@ performance on a MacBook pro is outstanding:
     [Noir], [2.2s], [16kB], [],
     [Docknetwork], [19s], [190kB], [],
     [Longfellow], [1.170s\*], [\<1MB\*\*], [\*Does not include revocation verification.
-      \*\*No formal numbers, just a comparison to Android's intent buffer.]
+      \*\*No formal numbers, just a comparison to Android's intent buffer. From @FS24 Section 6.2.]
   ),
   caption: [Summary of the full proof]
 )
