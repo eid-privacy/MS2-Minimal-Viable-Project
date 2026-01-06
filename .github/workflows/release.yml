@@ -27,18 +27,20 @@ jobs:
         run: |
           DATETIME=$(date +'%Y-%m-%d_%H-%M')
           echo "datetime=${DATETIME}" >> $GITHUB_OUTPUT
-          echo "filename=101.292-IP-ICT-ms2-report-${DATETIME}.pdf" >> $GITHUB_OUTPUT
+          echo "filename_date=101.292-IP-ICT-ms2-report-${DATETIME}.pdf" >> $GITHUB_OUTPUT
+          echo "filename=101.292-IP-ICT-ms2-report.pdf" >> $GITHUB_OUTPUT
 
       - name: Rename PDF
         run: |
           cp report/index.pdf ${{ steps.datetime.outputs.filename }}
+          cp report/index.pdf ${{ steps.datetime.outputs.filename_date }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.datetime.outputs.datetime }}
           name: ${{ steps.datetime.outputs.datetime }}
-          files: ${{ steps.datetime.outputs.filename }}
+          files: ${{ steps.datetime.outputs.filename_date }}
           generate_release_notes: true
 
       - name: Update Latest Release
@@ -46,5 +48,5 @@ jobs:
         with:
           tag_name: latest
           name: Latest Report
-          files: report/index.pdf
+          files: ${{ steps.datetime.outputs.filename }}
           generate_release_notes: false
