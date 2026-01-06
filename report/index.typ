@@ -21,7 +21,11 @@
       email: "ahmed.elghareeb@epfl.ch",
     ),
   ),
-  abstract: lorem(100),
+  abstract: [We describe the ongoing work for the Innosuisse grant 101.292 IP-ICT between EPFL's C4DT and SICPA SA.
+  We list the most recent performance and suitability assessments for the main anonymous credential implementation
+  candidates: Noir/UltraHonk, Docknetwork/BBS, Longfellow. We describe how the objective of each work package can be
+  achieved with these technologies and the time/space cost for each of them. Finally, we summarize the interactions and
+  byproducts of our work as well as the direction we'll follow for the remainder of the project.],
   bibliography: bibliography("references.bib"),
 )
 // #set page(margin: (inside: 2cm, outside: 1.5cm, y: 1.75cm))
