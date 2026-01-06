@@ -40,3 +40,11 @@ jobs:
           name: ${{ steps.datetime.outputs.datetime }}
           files: ${{ steps.datetime.outputs.filename }}
           generate_release_notes: true
+
+      - name: Update Latest Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          name: Latest Report
+          files: report/index.pdf
+          generate_release_notes: false

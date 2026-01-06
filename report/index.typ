@@ -351,6 +351,39 @@ When defining a ZKP with Noir, the following parts are important:
   or boolean values.
   Examples are valid signature verification, hash equalities, value comparisons.
 
+= Proof of Concept Code
+
+All the code for the Proof of Concept can be found in the public github
+repository #link("https://github.com/eid-privacy/zkp-pocs")[github.com/eid-privacy/zkp-pocs].
+It contains both the code for the docknetwork and the noir PoCs.
+We made sure to make it as reproducible as possible.
+
+== Reproducing Measurements
+
+You can reproduce the measurements on your own machines by following the
+instructions in #link("https://github.com/eid-privacy/zkp-pocs")[github.com/eid-privacy/zkp-pocs].
+To make the system as reproducible as possible, we use the
+#link("https://www.jetify.com/docs/devbox/installing-devbox")[DevBox]
+system.
+Once installed, it allows to easily run various tools on your computer to
+reproduce our experiments.
+The TLDR after the devbox installation is:
+
+#v(1em)
+```bash
+git clone https://github.com/eid-privacy/zkp-pocs
+cd zkp-pocs
+devbox run dock-all # Runs all docknetwork tests
+devbox run noir-all # Runs all noir examples
+```
+#v(1em)
+
+After the tests and examples have been run, you can find the results
+in the `docknetwork/stats.csv` and `noir/stats.csv` files.
+Of course they will differ from the results we have here, unless
+you have the same machine as the one we used to run these
+experiments.
+
 = G3.2 - Proof of Device (Holder) Binding <proof_device_binding>
 
 For this first work package where we created a proof-of-concept, we had to
@@ -794,30 +827,6 @@ performance on a MacBook pro is outstanding:
 
 We will definitely continue to pursue Noir and make sure that the framework
 delivers security as good as speed.
-
-= Reproducing Measurements
-
-You can reproduce the measurements on your own machines by following the
-instructions in #link("https://github.com/eid-privacy/zkp-pocs")[github.com/eid-privacy/zkp-pocs].
-To make the system as reproducible as possible, we use the
-#link("https://www.jetify.com/docs/devbox/installing-devbox")[DevBox]
-system.
-Once installed, it allows to easily run various tools on your computer to
-reproduce our experiments.
-The TLDR after the devbox installation is:
-
-```bash
-git clone https://github.com/eid-privacy/zkp-pocs
-cd zkp-pocs
-devbox run dock-all # Runs all docknetwork tests
-devbox run noir-all # Runs all noir examples
-```
-
-After the tests and examples have been run, you can find the results
-in the `docknetwork/stats.csv` and `noir/stats.csv` files.
-Of course they will differ from the results we have here, unless
-you have the same machine as the one we used to run these
-experiments.
 
 = Byproducts
 
