@@ -793,6 +793,7 @@ performance on a MacBook pro is outstanding:
   ),
   caption: [Summary of the full proof]
 )
+    #todo[should we put the overall times from the paper with an \* for the missing revocation ?]
 
 We will definitely continue to pursue Noir and make sure that the framework
 delivers security as good as speed.
@@ -832,7 +833,7 @@ create proofs make us believe that it is the good way to go.
 
 As a response to our reports, blog posts, and visits at conferences
 we had various discussions with our partners and other entities:
-
+#todo[The formatting of new lines in the bullet points list is odd, should the spillover be indented ?]
 - #link("https://www.bit.admin.ch/en")[FOITT] and #link("https://www.bj.admin.ch/bj/en/home.html")[FOJ],
 who are developing Swiyu, allowed us to get feedback on our current
 implementation and ideas.
@@ -865,6 +866,8 @@ were present and gave us valuable feedback.
 
 To help discussions regarding e-ID and making sure we use the correct terms
 when talking about the different parts of the system, we set out to write
+#todo[We've turned to links (which look very nice in the text I must say) but we started with regular bibliographic
+references, should we stick to one or just add the references here where it makes sense (eg: not the FOJ or FOITT links, but the taxonomy one)]
 a #link("https://eid-privacy.github.io/wp1/2025/09/17/taxonomy-of-digital-identity-systems.html")[Taxonomy of digital identity systems].
 In 2026 we will update this whitepaper and turn it into a full systematization
 of knowledge paper by measuring various solutions proposed for privacy-preserving
