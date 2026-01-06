@@ -26,14 +26,16 @@ jobs:
         id: datetime
         run: |
           DATETIME=$(date +'%Y-%m-%d_%H-%M')
+          BASENAME=eid_privacy-101.292-IP-ICT-ms2-report
           echo "datetime=${DATETIME}" >> $GITHUB_OUTPUT
-          echo "filename_date=101.292-IP-ICT-ms2-report-${DATETIME}.pdf" >> $GITHUB_OUTPUT
-          echo "filename=101.292-IP-ICT-ms2-report.pdf" >> $GITHUB_OUTPUT
+          echo "filename_date=${BASENAME}-${DATETIME}.pdf" >> $GITHUB_OUTPUT
+          echo "filename=${BASENAME}.pdf" >> $GITHUB_OUTPUT
 
       - name: Rename PDF
         run: |
           cp report/index.pdf ${{ steps.datetime.outputs.filename }}
           cp report/index.pdf ${{ steps.datetime.outputs.filename_date }}
+          rm report/index.pdf
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
