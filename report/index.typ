@@ -239,15 +239,16 @@ verifier, plus the proof that the circuit is correct.
 Holder's privacy in the current version of Swiyu (and the EUID) hinges on two mechanisms when it comes to the
 credential format:
 / Selective disclosure: the credential contains hashes of the holder's attribute value rather than the values
-  themselves. This allows the holder to share actual values on a granual and case-by-case basis,
+  themselves. This allows the holder to share actual values on a granular and case-by-case basis,
   and the holder to verify that these values match the hashes signed by the issuer of the credential.
-/ Batch issuance: an SD-JWT or mDoc credential holds a lot of uniquely identifying data, whether technical or related
-  to the natural person it describes. To avoid issuers and verifiers tracking users across interactions by keeping
+/ Batch issuance: an SD-JWT or mDoc credential holds uniquely identifying data, whether technical or related
+  to the physical person it describes. To avoid issuers and verifiers tracking users across interactions by keeping
   track of these unique pieces of data, Swiyu (and the EU) plan on issuing batches of single-use credentials to holders.
+  #todo[from LG: add link to batch issuance whitepaper from Swiyu]
   Each credential is meant to be presented once to prevent reappearance of these uniquely identifying values. While this
   solution technically works, it involves a sizeable overhead for issuers (more cryptographic work), and holders
   (careful keys and credentials management).
-#todo[Review this.]
+#todo[Review this. LG: LGTM]
 
 == Recap of Needed Elements
 
@@ -793,7 +794,8 @@ performance on a MacBook pro is outstanding:
   ),
   caption: [Summary of the full proof]
 )
-    #todo[should we put the overall times from the paper with an \* for the missing revocation ?]
+    #todo[should we put the overall times from the paper with an \* for the missing revocation ?
+      LG: yes, that was my idea here - but I didn't get them from the paper yet.]
 
 We will definitely continue to pursue Noir and make sure that the framework
 delivers security as good as speed.
@@ -833,25 +835,26 @@ create proofs make us believe that it is the good way to go.
 
 As a response to our reports, blog posts, and visits at conferences
 we had various discussions with our partners and other entities:
-#todo[The formatting of new lines in the bullet points list is odd, should the spillover be indented ?]
+#todo[The formatting of new lines in the bullet points list is odd, should the spillover be indented ?
+  LG: yes, forgot to indent it - fixed now]
 - #link("https://www.bit.admin.ch/en")[FOITT] and #link("https://www.bj.admin.ch/bj/en/home.html")[FOJ],
-who are developing Swiyu, allowed us to get feedback on our current
-implementation and ideas.
-The discussions were also important because it allowed us to learn
-new challenges for them, and get a first impression of our proposed
-algorithms.
+  who are developing Swiyu, allowed us to get feedback on our current
+  implementation and ideas.
+  The discussions were also important because it allowed us to learn
+  new challenges for them, and get a first impression of our proposed
+  algorithms.
 - #link("https://ubique.ch/")[Ubique] are working on their
-#link("https://heidi-universe.ch/en/index.html")[Heidi] implementation of the
-e-ID, supported by the #link("https://www.sprind.org/en/words/magazine/eudi-wallet-prototypes-third-stage")[SPRIN-D]
-Federal Agency from Germany.
-They published the code using ZKAttest, and gave us valuable feedback
-on our choices and search in new algorithms.
+  #link("https://heidi-universe.ch/en/index.html")[Heidi] implementation of the
+  e-ID, supported by the #link("https://www.sprind.org/en/words/magazine/eudi-wallet-prototypes-third-stage")[SPRIN-D]
+  Federal Agency from Germany.
+  They published the code using ZKAttest, and gave us valuable feedback
+  on our choices and search in new algorithms.
 - Professors from UniBe and ETHZ gave us feedback and questions on
-our blog-post.
-This allowed us to better understand what is difficult to grasp
-and which elements of the e-ID still need to be made better.
+  our blog-post.
+  This allowed us to better understand what is difficult to grasp
+  and which elements of the e-ID still need to be made better.
 - Human Colossus discussed the fundamentals of social and ethical
-requirements for digital societies, in particular e-ID.
+  requirements for digital societies, in particular e-ID.
 
 == Hands-on Workshop
 
