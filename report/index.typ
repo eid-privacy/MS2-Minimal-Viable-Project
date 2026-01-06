@@ -23,10 +23,10 @@
   ),
   abstract: [We describe the ongoing work for the Innosuisse grant 101.292 IP-ICT between EPFL's C4DT and SICPA SA.
   We list the most recent performance and suitability assessments for the main anonymous credential implementation
-  candidates: Noir/UltraHonk, Docknetwork/BBS, Longfellow. We describe how the objective of each work package can be
+  candidates: Noir/UltraHONK, Docknetwork/BBS, Longfellow. We describe how the objective of each work package can be
   achieved with these technologies and the time/space cost for each of them. Finally, we summarize the interactions and
   byproducts of our work as well as the direction we'll follow for the remainder of the project.],
-  bibliography: bibliography("references.bib"),
+  bibliography: bibliography("references.bib", style: "ieee"),
 )
 // #set page(margin: (inside: 2cm, outside: 1.5cm, y: 1.75cm))
 
@@ -169,7 +169,7 @@ presented in this report and how they fare for the operations used.
 It is to be noted that this evaluation can greatly differ depending on the
 goals for these algorithms.
 Also, when writing Noir, we refer ourselves to the version 1.0.0-beta15
-with the Barretenberg backend using ultra-honk.
+with the Barretenberg backend using UltraHONK @UltraHONK.
 
 #figure(
   table(
@@ -797,7 +797,27 @@ delivers security as good as speed.
 
 = Reproducing Measurements
 
-#todo[LG: Follow the README.md in the repository]
+You can reproduce the measurements on your own machines by following the
+instructions in #link("https://github.com/eid-privacy/zkp-pocs")[github.com/eid-privacy/zkp-pocs].
+To make the system as reproducible as possible, we use the
+#link("https://www.jetify.com/docs/devbox/installing-devbox")[DevBox]
+system.
+Once installed, it allows to easily run various tools on your computer to
+reproduce our experiments.
+The TLDR after the devbox installation is:
+
+```bash
+git clone https://github.com/eid-privacy/zkp-pocs
+cd zkp-pocs
+devbox run dock-all # Runs all docknetwork tests
+devbox run noir-all # Runs all noir examples
+```
+
+After the tests and examples have been run, you can find the results
+in the `docknetwork/stats.csv` and `noir/stats.csv` files.
+Of course they will differ from the results we have here, unless
+you have the same machine as the one we used to run these
+experiments.
 
 = Byproducts
 
@@ -863,7 +883,6 @@ were present and gave us valuable feedback.
 To help discussions regarding e-ID and making sure we use the correct terms
 when talking about the different parts of the system, we set out to write
 a Taxonomy of digital identity systems @EIDTaxonomy.
-#todo[LG: look into how to make techreport reference with URL link].
 In 2026 we will update this whitepaper and turn it into a full systematization
 of knowledge paper by measuring various solutions proposed for privacy-preserving
 solutions.
