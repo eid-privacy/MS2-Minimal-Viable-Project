@@ -1,7 +1,8 @@
-#import "@preview/unequivocal-ams:0.1.2": ams-article, theorem, proof
+#import "ams-article.typ": ams-article
 #show link: underline
 #show: ams-article.with(
-  title: [Innosuisse Report G0.2],
+  title: [Secure and Privacy-Preserving Credentials for E-ID - #linebreak()
+    Proof-of-Concept],
   paper-size: "a4",
   authors: (
     (
@@ -21,7 +22,8 @@
       email: "ahmed.elghareeb@epfl.ch",
     ),
   ),
-  abstract: [We describe the ongoing work for the Innosuisse grant 101.292 IP-ICT between EPFL's C4DT and SICPA SA.
+  abstract: [We describe the ongoing work for the Innosuisse grant 101.292 IP-ICT -
+  Secure and Privacy-Preserving Credentials for E-ID - between EPFL's C4DT and SICPA SA.
   We list the most recent performance and suitability assessments for the main anonymous credential implementation
   candidates: Noir/UltraHONK, Docknetwork/BBS, Longfellow. We describe how the objective of each work package can be
   achieved with these technologies and the time/space cost for each of them. Finally, we summarize the interactions and
@@ -32,6 +34,7 @@
 
 #import "@preview/dashy-todo:0.1.3": todo
 #set heading(numbering: "1.")
+#show table.cell.where(y: 0): strong
 
 #let Pub_holder = $"Pub"_"holder"$
 #let Pub_issuer = $"Pub"_"issuer"$
@@ -61,7 +64,8 @@
 
 = Introduction
 
-This report is the G0.2 for the milestone 2 of the Innosuisse grant 101.292 IP-ICT.
+This report is the G0.2 for the milestone 2 of the Innosuisse grant 101.292 IP-ICT,
+*Secure and Privacy-Preserving Credentials for E-ID*.
 It recaps the results we gained from building a Proof-of-Concept for an anonymous,
 unlinkable credential which has the following capabilities:
 
