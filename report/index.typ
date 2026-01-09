@@ -96,12 +96,12 @@ the most sense to implement.
     columns: 4,
     table.header([Work Package], [Solution], [Overall Time / Proof Size], [Links]),
     table.cell(rowspan:3)[WP3 - Device Binding],
-    [Noir], [0.8s / 16kB], [#link_zkp_pocs_noir("holder_binding", "c03_holder_binding")],
-    [Docknetwork/ZKAttest], [18s / 186kB], [#link_zkp_pocs_dock("holder_binding", "c03_holder_binding")],
+    [Noir], [0.5s / 16kB], [#link_zkp_pocs_noir("holder_binding", "c03_holder_binding")],
+    [Docknetwork/ZKAttest], [15s / 186kB], [#link_zkp_pocs_dock("holder_binding", "c03_holder_binding")],
     [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP4 - Issuer Signature],
-    [Noir], [0.7s / 16kB], [#link_zkp_pocs_noir("issuer_signature", "c04_issuer_signature")],
+    [Noir], [0.6s / 16kB], [#link_zkp_pocs_noir("issuer_signature", "c04_issuer_signature")],
     [Docknetwork/BBS], [0.1s / 0.5kB], [#link_zkp_pocs_dock("issuer_signature", "c04_issuer_signature")],
     [Longfellow], [1s / 300kb], [@FS24],
 
@@ -111,12 +111,12 @@ the most sense to implement.
     [Longfellow], [.47s / 300kb], [@FS24],
 
     table.cell(rowspan:2)[WP6 - Non-Revocation],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("non_revocation", "c06_non_revocation")],
-    [Docknetwork/Accumulators], [0.2s / 0.7kB], [#link_zkp_pocs_dock("non_revocation", "c06_non_revocation")],
+    [Noir], [0.5s / 16kB], [#link_zkp_pocs_noir("non_revocation", "c06_non_revocation")],
+    [Docknetwork/Accumulators], [0.1s / 0.7kB], [#link_zkp_pocs_dock("non_revocation", "c06_non_revocation")],
 
     table.cell(rowspan:2)[WP3..WP6],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("full_proof", "c09_full_proof")],
-    [Docknetwork/All], [19s / 190kB], [#link_zkp_pocs_dock("full_proof", "c09_full_proof")],
+    [Noir], [1.5s / 16kB], [#link_zkp_pocs_noir("full_proof", "c09_full_proof")],
+    [Docknetwork/All], [16s / 190kB], [#link_zkp_pocs_dock("full_proof", "c09_full_proof")],
   ),
   caption: [Summary of our proof-of-concepts]
 ) <table_summary>
