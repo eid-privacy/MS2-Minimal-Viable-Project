@@ -36,6 +36,36 @@
 #set heading(numbering: "1.")
 #show table.cell.where(y: 0): strong
 
+#let formatFloat(n, d: 1) = {
+  let s = str(calc.round(n, digits: d))
+  if not s.contains(".") { s + ".0" } else { s }
+}
+
+#let addTime(a, b, d: 1) = {
+  formatFloat(float(a) + float(b), d: d) + "s"
+}
+
+#let roundSize(a) = {
+  str(calc.round(int(a) / 1024)) + "kB"
+}
+
+#let timeNoir(wp) = {
+  let stats = csv("stats_noir.csv").at(wp)
+  addTime(stats.at(4), stats.at(5))
+}
+#let sizeNoir(wp) = {
+  let stats = csv("stats_noir.csv").at(wp)
+  roundSize(stats.at(6))
+}
+#let timeDock(wp) = {
+  let stats = csv("stats_dock.csv").at(wp)
+  addTime(stats.at(2), stats.at(3), d: 2)
+}
+#let sizeDock(wp) = {
+  let stats = csv("stats_dock.csv").at(wp)
+  roundSize(stats.at(4))
+}
+
 #let Pub_holder = $"Pub"_"holder"$
 #let Pub_issuer = $"Pub"_"issuer"$
 #let challenge = $"Challenge"$
@@ -96,27 +126,27 @@ the most sense to implement.
     columns: 4,
     table.header([Work Package], [Solution], [Overall Time / Proof Size], [Links]),
     table.cell(rowspan:3)[WP3 - Device Binding],
-    [Noir], [0.5s / 16kB], [#link_zkp_pocs_noir("holder_binding", "c03_holder_binding")],
-    [Docknetwork/ZKAttest], [15s / 186kB], [#link_zkp_pocs_dock("holder_binding", "c03_holder_binding")],
+    [Noir], [#timeNoir(1) / #sizeNoir(1)], [#link_zkp_pocs_noir("holder_binding", "c03_holder_binding")],
+    [Docknetwork/ZKAttest], [#timeDock(1) / #sizeDock(1)], [#link_zkp_pocs_dock("holder_binding", "c03_holder_binding")],
     [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP4 - Issuer Signature],
-    [Noir], [0.6s / 16kB], [#link_zkp_pocs_noir("issuer_signature", "c04_issuer_signature")],
-    [Docknetwork/BBS], [0.1s / 0.5kB], [#link_zkp_pocs_dock("issuer_signature", "c04_issuer_signature")],
+    [Noir], [#timeNoir(2) / #sizeNoir(2)], [#link_zkp_pocs_noir("issuer_signature", "c04_issuer_signature")],
+    [Docknetwork/BBS], [#timeDock(2) / #sizeDock(2)], [#link_zkp_pocs_dock("issuer_signature", "c04_issuer_signature")],
     [Longfellow], [1s / 300kb], [@FS24],
 
     table.cell(rowspan:3)[WP5 - Predicates],
-    [Noir], [0.2s / 16kB], [#link_zkp_pocs_noir("age_verification", "c05_age_verification")],
-    [Docknetwork/Bulletproofs], [0.5s / 2kB], [#link_zkp_pocs_dock("age_verification", "c05_age_verification")],
+    [Noir], [#timeNoir(3) / #sizeNoir(3)], [#link_zkp_pocs_noir("age_verification", "c05_age_verification")],
+    [Docknetwork/Bulletproofs], [#timeDock(4) / #sizeDock(4)], [#link_zkp_pocs_dock("age_verification", "c05_age_verification")],
     [Longfellow], [.47s / 300kb], [@FS24],
 
     table.cell(rowspan:2)[WP6 - Non-Revocation],
-    [Noir], [0.5s / 16kB], [#link_zkp_pocs_noir("non_revocation", "c06_non_revocation")],
-    [Docknetwork/Accumulators], [0.1s / 0.7kB], [#link_zkp_pocs_dock("non_revocation", "c06_non_revocation")],
+    [Noir], [#timeNoir(4) / #sizeNoir(4)], [#link_zkp_pocs_noir("non_revocation", "c06_non_revocation")],
+    [Docknetwork/Accumulators], [#timeDock(5) / #sizeDock(5)], [#link_zkp_pocs_dock("non_revocation", "c06_non_revocation")],
 
     table.cell(rowspan:2)[WP3..WP6],
-    [Noir], [1.5s / 16kB], [#link_zkp_pocs_noir("full_proof", "c09_full_proof")],
-    [Docknetwork/All], [16s / 190kB], [#link_zkp_pocs_dock("full_proof", "c09_full_proof")],
+    [Noir], [#timeNoir(5) / #sizeNoir(5)], [#link_zkp_pocs_noir("full_proof", "c09_full_proof")],
+    [Docknetwork/All], [#timeDock(6) / #sizeDock(6)], [#link_zkp_pocs_dock("full_proof", "c09_full_proof")],
   ),
   caption: [Summary of our proof-of-concepts]
 ) <table_summary>
@@ -181,18 +211,19 @@ with the Barretenberg backend using UltraHONK @UltraHONK.
     table.header([Algorithm], [Proof size], [Proof time], [Auditability], [Composability]),
 
     [ZKAttest], [OK], [OK], [OK], [Limited],
-    [Noir], [OK], [OK..Bad], [Some], [OK],
+    [Noir], [OK], [OK], [Some], [OK],
     [Longfellow], [OK], [OK], [Some], [No],
-    [Bulletproof], [OK], [Bad], [OK..Some], [Some (range proofs)],
+    [Bulletproof], [OK], [OK], [OK..Some], [Some (range proofs)],
     [BBS], [OK], [OK], [OK], [Some]
   ),
   caption: [Short comparison of algorithms used in this report]
 ) <table_zkp_comparison>
 
-We can recap the three main solution explored here like the following:
+We can recap the three main solutions explored here like the following:
 
 / Noir: Written in an easy-to learn language which is very close to Rust.
-  Very fast proving time, but slow verification time.
+  Fast verification time, but slower proving time compared to specialized solutions like
+  Docknetwork.
 / ZKAttest: Simple proof, understandable and verifiable with reasonable level of expertise.
   Uses BBS, a non-standardized credential format which is not PQS.
 / Longfellow: Fast, post-quantum secure. But circuit auditing and writing is difficult.
@@ -489,10 +520,10 @@ which we can see as an upperbound on the proof length for holder binding.
   table(
     columns: 4,
     align:(left),
-    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
-    [Noir], [0.8s], [16kB],
+    table.header([Algorithm], [Overall \ time], [Proof \ size], [Specific Comments]),
+    [Noir], [#timeNoir(1)], [#sizeNoir(1)],
       [Only includes the #Pr_sig_ch, not the #Pr_sig_cred],
-    [Docknetwork/ZKAttest], [18s], [186kB],
+    [Docknetwork/ \ ZKAttest], [#timeDock(1)], [#sizeDock(1)],
       [Only works with BBS from the issuer side],
     [Longfellow], [\~0.08s], [\<300kb],
       [None],
@@ -574,10 +605,10 @@ This benchmark provides an upper-bound that we can compare to other solutions.
   table(
     columns: 4,
     align:(left),
-    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
-    [Noir], [0.7s], [16kB],
+    table.header([Algorithm], [Overall \ time], [Proof \ size], [Specific Comments]),
+    [Noir], [#timeNoir(2)], [#sizeNoir(2)],
       [Uses the secp256k1 curve instead of the secp256r1],
-    [Docknetwork/BBS], [0.1s], [0.5kB],
+    [Docknetwork/ \ BBS], [#timeDock(2)], [#sizeDock(2)],
       [Optimal use-case for BBS],
     [Longfellow], [0.470s], [291kb],
       [6.1 in @FS24, includes the scanning of the mdoc and a selective disclosure]
@@ -690,10 +721,10 @@ in other variants.
   table(
     columns: 4,
     align:(left),
-    table.header([Algorithm], [Overall time], [Proof size], [Specific Comments]),
-    [Noir], [0.2s], [16kB],
+    table.header([Algorithm], [Overall \ time], [Proof \ size], [Specific Comments]),
+    [Noir], [#timeNoir(3)], [#sizeNoir(3)],
       [Only range-proof],
-    [Docknetwork/Bulletproofs], [0.5s], [2kB],
+    [Docknetwork/ \ Bulletproofs], [#timeDock(4)], [#sizeDock(4)],
       [The credential is presented as a BBS],
     [Longfellow], [410ms], [291kb],
       [From @FS24 section 6.1 on a phone, deducting the signature verification time for precision.]
@@ -797,10 +828,10 @@ on a given status list but there are no formal measurements for this proof.
   table(
     columns: 4,
     align:(left),
-    table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
-    [Noir], [0.6s], [16kB],
+    table.header([Algorithm], [Overall \ time], [Proof \ size], [Specific Comment]),
+    [Noir], [#timeNoir(4)], [#sizeNoir(4)],
       [Uses a specific revocation-list format],
-    [Docknetwork/Accumulators], [0.2s], [0.7kB],
+    [Docknetwork/ \ Accumulators], [#timeDock(5)], [#sizeDock(5)],
       [Updates to the non-revocation proofs on the holder side are expensive],
     [Longfellow], [], [],
       [Even though there is code available in the repository that includes revocation, we were not able
@@ -820,17 +851,19 @@ performance on a MacBook pro is outstanding:
   table(
     columns: 4,
     align:(left),
-    table.header([Algorithm], [Overall time], [Proof size], [Specific Comment]),
-    [Noir], [2.2s], [16kB], [],
-    [Docknetwork], [19s], [190kB], [],
+    table.header([Algorithm], [Overall \ time], [Proof \ size], [Specific Comment]),
+    [Noir], [#timeNoir(5)], [#sizeNoir(5)], [],
+    [Docknetwork], [#timeDock(6)], [#sizeDock(6)], [],
     [Longfellow], [1.170s\*], [\<1MB\*\*], [\*Does not include revocation verification.
       \*\*No formal numbers, just a comparison to Android's intent buffer. From @FS24 Section 6.2.]
   ),
   caption: [Summary of the full proof]
 )
 
-We will definitely continue to pursue Noir and make sure that the framework
-delivers security as good as speed.
+While Docknetwork demonstrates competitive performance, particularly excelling in specialized proofs like
+credential signing and non-revocation, we will continue to pursue Noir due to its superior composability
+and developer accessibility. We aim to optimize Noir's proving time to be more competitive with
+specialized solutions.
 
 = Byproducts
 

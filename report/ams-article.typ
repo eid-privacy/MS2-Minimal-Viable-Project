@@ -191,6 +191,8 @@
   // Configure citation and bibliography styles.
   set std.bibliography(style: "springer-mathphys", title: [References])
 
+  show table: set list(indent: 0pt, body-indent: 5pt)
+  show table: set enum(indent: 0pt, body-indent: 5pt)
   show table: set block(above: 20pt, below: 20pt)
   set figure(gap: 17pt)
   show figure: set block(above: 12.5pt, below: 15pt)
