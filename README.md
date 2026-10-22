@@ -1,5 +1,10 @@
 # MS2 - Minimal Viable Project
 
+> [!NOTE]
+> This report has moved to [eid-privacy/zkp-reports](https://github.com/eid-privacy/zkp-reports/tree/main/ms2-report),
+> where all reports of the project are collected and built.
+> This repository is kept for its history and will be archived.
+
 ## Description
 
 This milestone is used as the Go/no-Go for Innosuisse, as described in D0.2.
