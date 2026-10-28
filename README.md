@@ -38,7 +38,7 @@ and the Docknetwork proof-of-concepts in [zkp-pocs](https://github.com/eid-priva
     [noir/c04_issuer_signature](https://github.com/eid-privacy/zkp-pocs/tree/main/noir/c04_issuer_signature),
     [docknetwork c04_issuer_signature](https://github.com/eid-privacy/zkp-pocs/blob/main/docknetwork/tests/c04_issuer_signature.rs)
 - G5.1 The security evaluation of the subset of available libraries is available and verifiable by third parties.
-  - Done: evaluation of the libraries in [WP2-Libraries](https://github.com/eid-privacy/WP2-Libraries), and of Docknetwork and Noir in the
+  - Done: evaluation of the libraries in the [zkp-vault Library Evaluation](https://eid-privacy.github.io/zkp-vault/eID/Library-Evaluation/), and of Docknetwork and Noir in the
     report sections _Frameworks used for our Proof-of-Concepts_ and _Participation in OSS Development_.
     See also the blog post
     [Choosing a Cryptographic Library for Anonymous Credentials](https://eid-privacy.github.io/wp2/2026/01/27/docknetwork-crypto-library.html)
